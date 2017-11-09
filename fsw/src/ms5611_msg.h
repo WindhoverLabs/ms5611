@@ -121,6 +121,9 @@ extern "C" {
 */
 #define MS5611_RESET_CC                (1)
 
+
+#define MS5611_SEND_DIAG_TLM_CC        (7)
+
 /************************************************************************
 ** Local Structure Declarations
 *************************************************************************/
@@ -154,6 +157,15 @@ typedef struct
     uint8                 State;
 
 } MS5611_HkTlm_t;
+
+/** 
+**  \brief MS5611 diagnostic data
+*/
+typedef struct
+{
+    uint8           TlmHeader[CFE_SB_TLM_HDR_SIZE];   
+
+} MS5611_DiagPacket_t;
 
 
 #ifdef __cplusplus

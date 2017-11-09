@@ -9,6 +9,7 @@
 #include "ms5611_app.h"
 #include "ms5611_msg.h"
 #include "ms5611_version.h"
+#include <math.h>
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -76,11 +77,11 @@ int32 MS5611::InitPipe()
             MS5611_SCH_PIPE_NAME);
     if (iStatus == CFE_SUCCESS)
     {
-        iStatus = CFE_SB_SubscribeEx(MS5611_WAKEUP_MID, SchPipeId, CFE_SB_Default_Qos, MS5611_WAKEUP_MID_MAX_MSG_COUNT);
+        iStatus = CFE_SB_SubscribeEx(MS5611_MEASURE_MID, SchPipeId, CFE_SB_Default_Qos, MS5611_MEASURE_MID_MAX_MSG_COUNT);
         if (iStatus != CFE_SUCCESS)
         {
             (void) CFE_EVS_SendEvent(MS5611_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                    "Sch Pipe failed to subscribe to MS5611_WAKEUP_MID. (0x%08lX)",
+                    "Sch Pipe failed to subscribe to MS5611_MEASURE_MID. (0x%08lX)",
                     iStatus);
             goto MS5611_InitPipe_Exit_Tag;
         }
@@ -142,9 +143,12 @@ void MS5611::InitData()
     /* Init housekeeping message. */
     CFE_SB_InitMsg(&HkTlm,
             MS5611_HK_TLM_MID, sizeof(HkTlm), TRUE);
-      /* Init output messages */
-      CFE_SB_InitMsg(&SensorBaro,
-            MS5611_MEASURE_MID, sizeof(PX4_SensorBaroMsg_t), TRUE);
+    /* Init output messages */
+    CFE_SB_InitMsg(&SensorBaro,
+            PX4_SENSOR_BARO_MID, sizeof(PX4_SensorBaroMsg_t), TRUE);
+    /* Init diagnostic message */
+    CFE_SB_InitMsg(&Diag,
+            MS5611_DIAG_TLM_MID, sizeof(MS5611_DiagPacket_t), TRUE);
     /* Init custom data */
     MS5611_Custom_InitData();
 }
@@ -258,12 +262,11 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
         MsgId = CFE_SB_GetMsgId(MsgPtr);
         switch (MsgId)
         {
-            case MS5611_WAKEUP_MID:
-                /* TODO:  Do something here. */
-                break;
-
             case MS5611_SEND_HK_MID:
                 ReportHousekeeping();
+                break;
+            case MS5611_MEASURE_MID:
+                ReadDevice();
                 break;
             default:
                 (void) CFE_EVS_SendEvent(MS5611_MSGID_ERR_EID, CFE_EVS_ERROR,
@@ -356,36 +359,44 @@ void MS5611::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
 
     if (MsgPtr != NULL)
     {
-        uiCmdCode = CFE_SB_GetCmdCode(MsgPtr);
-        switch (uiCmdCode)
+        uint16 ExpectedLength = sizeof(MS5611_NoArgCmd_t); 
+        /* Length verification is then the same for all three commands */
+        if (VerifyCmdLength(MsgPtr, ExpectedLength))
         {
-            case MS5611_NOOP_CC:
-                HkTlm.usCmdCnt++;
-                (void) CFE_EVS_SendEvent(MS5611_CMD_NOOP_EID, CFE_EVS_INFORMATION,
-                    "Recvd NOOP. Version %d.%d.%d.%d",
-                    MS5611_MAJOR_VERSION,
-                    MS5611_MINOR_VERSION,
-                    MS5611_REVISION,
-                    MS5611_MISSION_REV);
-                break;
-
-            case MS5611_RESET_CC:
-                HkTlm.usCmdCnt = 0;
-                HkTlm.usCmdErrCnt = 0;
-                break;
-
-            default:
-                HkTlm.usCmdErrCnt++;
-                (void) CFE_EVS_SendEvent(MS5611_CC_ERR_EID, CFE_EVS_ERROR,
-                                  "Recvd invalid command code (%u)", (unsigned int)uiCmdCode);
-                break;
+            uiCmdCode = CFE_SB_GetCmdCode(MsgPtr);
+            switch (uiCmdCode)
+            {
+                case MS5611_NOOP_CC:
+                    HkTlm.usCmdCnt++;
+                    (void) CFE_EVS_SendEvent(MS5611_CMD_NOOP_EID, CFE_EVS_INFORMATION,
+                        "Recvd NOOP. Version %d.%d.%d.%d",
+                        MS5611_MAJOR_VERSION,
+                        MS5611_MINOR_VERSION,
+                        MS5611_REVISION,
+                        MS5611_MISSION_REV);
+                    break;
+    
+                case MS5611_RESET_CC:
+                    HkTlm.usCmdCnt = 0;
+                    HkTlm.usCmdErrCnt = 0;
+                    break;
+                case MS5611_SEND_DIAG_TLM_CC:
+                    ReportDiagnostic();
+                    break;
+    
+                default:
+                    HkTlm.usCmdErrCnt++;
+                    (void) CFE_EVS_SendEvent(MS5611_CC_ERR_EID, CFE_EVS_ERROR,
+                                      "Recvd invalid command code (%u)", (unsigned int)uiCmdCode);
+                    break;
+            }
         }
     }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Send MS5611 Housekeeping                                           */
+/* Send MS5611 Housekeeping                                        */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -398,13 +409,14 @@ void MS5611::ReportHousekeeping()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Publish Output Data                                             */
+/* Send MS5611 Diagnostic                                          */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void MS5611::SendSensorBaro()
+
+void MS5611::ReportDiagnostic()
 {
-    CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
-    CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);
+    CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&Diag);
+    CFE_SB_SendMsg((CFE_SB_Msg_t*)&Diag);
 }
 
 
@@ -568,11 +580,57 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     *Pressure = (int32)((D1 * SENS / (1 << 21) - OFF) / (1 << 15) );
 }
 
+
+void MS5611::ReadDevice(void)
+{
+    int32 pressure = 0;
+    int32 temperature = 0;
+
+    GetMeasurement(&pressure, &temperature);
+
+    SensorBaro.Temperature = temperature / 100.0f;
+    /* convert to millibar */
+    SensorBaro.Pressure = pressure / 100.0f;
+
+    /* tropospheric properties (0-11km) for standard atmosphere */
+    /* temperature at base height in Kelvin */
+    const double T1 = 15.0 + 273.15;
+    /* temperature gradient in degrees per metre */
+    const double a  = -6.5 / 1000;
+    /* gravity constant in m/s/s */
+    const double g  = 9.80665;
+    /* ideal gas constant in J/kg/K */
+    const double R  = 287.05;
+
+    /* current pressure at MSL in kPa */
+    double p1 = 101325 / 1000.0;
+
+    /* measured pressure in kPa */
+    double p = pressure / 1000.0;
+
+    /*
+     * Solve:
+     *
+     *     /        -(aR / g)     \
+     *    | (p / p1)          . T1 | - T1
+     *     \                      /
+     * h = -------------------------------  + h1
+     *                   a
+     */
+    SensorBaro.Altitude = (((pow((p / p1), (-(a * R) / g))) * T1) - T1) / a;
+
+    CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
+    CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);
+}
+
+
 void MS5611_CleanupCallback(void)
 {
+    oMS5611.HkTlm.State = MS5611_UNINITIALIZED;
     if(MS5611_Custom_Uninit() != TRUE)
     {
         CFE_EVS_SendEvent(MS5611_UNINIT_ERR_EID, CFE_EVS_ERROR,"MS5611_Uninit failed");
+        oMS5611.HkTlm.State = MS5611_INITIALIZED;
     }
 }
 

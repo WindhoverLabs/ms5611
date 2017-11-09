@@ -102,6 +102,10 @@ public:
 
     /** \brief Housekeeping Telemetry for downlink */
     MS5611_HkTlm_t HkTlm;
+
+    /** \brief Diagnostic data for downlink */
+    MS5611_DiagPacket_t Diag;
+
     /************************************************************************/
     /** \brief MS5611 (MS5611) application entry point
      **
@@ -258,18 +262,19 @@ public:
      **
      *************************************************************************/
     void ReportHousekeeping(void);
+    
     /************************************************************************/
-    /** \brief Sends the SensorBaro message.
+    /** \brief Sends MS5611 diagnostic message
      **
      **  \par Description
-     **       This function publishes the SensorBaro message containing
-     **       <TODO>
+     **       This function sends the diagnostic message
      **
      **  \par Assumptions, External Events, and Notes:
      **       None
      **
      *************************************************************************/
-    void SendSensorBaro(void);
+    void ReportDiagnostic(void);
+
     /************************************************************************/
     /** \brief Verify Command Length
      **
@@ -291,6 +296,18 @@ public:
     boolean VerifyCmdLength(CFE_SB_Msg_t* MsgPtr, uint16 usExpectedLen);
 
     void GetMeasurement(int32 *Pressure, int32 *Temperature);
+    /************************************************************************/
+    /** \brief Sends the SensorBaro message.
+     **
+     **  \par Description
+     **       This function publishes the SensorBaro message containing
+     **       <TODO>
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     *************************************************************************/
+    void ReadDevice(void);
 
 };
 
