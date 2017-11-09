@@ -49,3 +49,9 @@ boolean MS5611_Custom_Uninit(void)
 {
     return TRUE;
 }
+
+
+boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal)
+{
+    return TRUE;
+}

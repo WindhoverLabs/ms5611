@@ -57,6 +57,7 @@ extern "C" {
 /************************************************************************
  ** Local Defines
  *************************************************************************/
+#define MS5611_COEF_SIZE    8
 
 /************************************************************************
  ** Local Structure Definitions
@@ -95,6 +96,9 @@ public:
 
     /** \brief Output Data published at the end of cycle */
     PX4_SensorBaroMsg_t SensorBaro;
+    
+    /** MS5611 calibration coefficients */
+    uint16 MS5611_Coefficients[MS5611_COEF_SIZE];
 
     /** \brief Housekeeping Telemetry for downlink */
     MS5611_HkTlm_t HkTlm;

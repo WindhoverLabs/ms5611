@@ -160,6 +160,7 @@ int32 MS5611::InitApp()
     int32  iStatus   = CFE_SUCCESS;
     int8   hasEvents = 0;
     boolean returnBool = TRUE;
+    int32 i = 0;
     
     iStatus = InitEvent();
     if (iStatus != CFE_SUCCESS)
@@ -185,6 +186,17 @@ int32 MS5611::InitApp()
     {
         iStatus = -1;
         goto MS5611_InitApp_Exit_Tag;
+    }
+
+    /* Get calibration coefficients from device PROM */
+    for(i = 0; i < MS5611_COEF_SIZE; ++i)
+    {
+        returnBool = MS5611_ReadPROM(i, &MS5611_Coefficients[i]);
+        if (FALSE == returnBool)
+        {
+            iStatus = -1;
+            goto MS5611_InitApp_Exit_Tag; 
+        }
     }
     HkTlm.State = MS5611_INITIALIZED;
 
