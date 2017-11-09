@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "cfe.h"
+#include "ms5611_custom.h"
 
 #include "ms5611_app.h"
 #include "ms5611_msg.h"
@@ -144,6 +145,8 @@ void MS5611::InitData()
       /* Init output messages */
       CFE_SB_InitMsg(&SensorBaro,
             MS5611_MEASURE_MID, sizeof(PX4_SensorBaroMsg_t), TRUE);
+    /* Init custom data */
+    MS5611_Custom_InitData();
 }
 
 
@@ -156,7 +159,8 @@ int32 MS5611::InitApp()
 {
     int32  iStatus   = CFE_SUCCESS;
     int8   hasEvents = 0;
-
+    boolean returnBool = TRUE;
+    
     iStatus = InitEvent();
     if (iStatus != CFE_SUCCESS)
     {
@@ -175,6 +179,24 @@ int32 MS5611::InitApp()
     }
 
     InitData();
+
+    returnBool = MS5611_Custom_Init();
+    if (FALSE == returnBool)
+    {
+        iStatus = -1;
+        goto MS5611_InitApp_Exit_Tag;
+    }
+    HkTlm.State = MS5611_INITIALIZED;
+
+    /* Register the cleanup callback */
+    iStatus = OS_TaskInstallDeleteHandler(&MS5611_CleanupCallback);
+    if (iStatus != CFE_SUCCESS)
+    {
+        CFE_EVS_SendEvent(MS5611_INIT_ERR_EID, CFE_EVS_ERROR,
+                                 "Failed to init register cleanup callback (0x%08X)",
+                                 (unsigned int)iStatus);
+        goto MS5611_InitApp_Exit_Tag;
+    }
 
 MS5611_InitApp_Exit_Tag:
     if (iStatus == CFE_SUCCESS)
@@ -466,6 +488,15 @@ void MS5611::AppMain()
 
     /* Exit the application */
     CFE_ES_ExitApp(uiRunStatus);
+}
+
+
+void MS5611_CleanupCallback(void)
+{
+    if(MS5611_Custom_Uninit() != TRUE)
+    {
+        CFE_EVS_SendEvent(MS5611_UNINIT_ERR_EID, CFE_EVS_ERROR,"MS5611_Uninit failed");
+    }
 }
 
 

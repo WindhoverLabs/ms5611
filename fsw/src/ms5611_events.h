@@ -217,38 +217,43 @@ typedef enum {
 **  The fourth \c %d field contains the expected length.
 */
 	MS5611_MSGLEN_ERR_EID,
-
-/** \brief <tt> 'Failed to register config table (0x%08X)' </tt>
-**  \event <tt> 'Failed to register config table (0x%08X)' </tt>
-**
+/** \brief <tt> 'MS5611 - $commandError' </tt>
+**  \event <tt> 'MS5611 - $commandError' </tt>
+**  
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
-**  This event message is issued when the CFS MS5611 Task fails to
-**  register the MS5611 configuration table.
-**
-**  The 32 bit hexadecimal number is the error code returned by CFE
-**  #CFE_TBL_Register function.
+**  This event message is issued when RGBLED has
+**  had an error processing a command.
 **
 */
-	MS5611_CFGTBL_REG_ERR_EID,
-
-/** \brief <tt> 'Failed to load Config Table (0x%08X)' </tt>
-**  \event <tt> 'Failed to load Config Table (0x%08X)' </tt>
-**
+    MS5611_CMD_ERR_EID,
+/** \brief <tt> 'MS5611 - ' </tt>
+**  \event <tt> 'MS5611 - ' </tt>
+**  
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
-**  This event message is issued when the CFS MS5611 Task fails to
-**  load the MS5611 configuration table.
-**
-**  The 32 bit hexadecimal number is the error code returned by CFE
-**  #CFE_TBL_Load function.
+**  This event message is issued when RGBLED has
+**  had an error in uninitialization.
 **
 */
-	MS5611_CFGTBL_LOAD_ERR_EID,
+    MS5611_UNINIT_ERR_EID,
+/** \brief <tt> 'MS5611 - ' </tt>
+**  \event <tt> 'MS5611 - ' </tt>
+**  
+**  \par Type: ERROR
+**
+**  \par Cause:
+**
+**  This event message is issued when the RGBLED has
+**  had an error in initialization.
+**
+*/
+    MS5611_INIT_ERR_EID,
+    
 
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
 	MS5611_EVT_CNT

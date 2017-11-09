@@ -61,6 +61,16 @@ extern "C" {
 /************************************************************************
  ** Local Structure Definitions
  *************************************************************************/
+/**
+ * \brief application status
+ */
+typedef enum
+{
+    /*! App status uninitialized */
+    MS5611_UNINITIALIZED = 0,
+    /*! App status uninitialized */
+    MS5611_INITIALIZED   = 1
+} MS5611_Status_t;
 
 
 /**
@@ -277,6 +287,21 @@ public:
     boolean VerifyCmdLength(CFE_SB_Msg_t* MsgPtr, uint16 usExpectedLen);
 
 };
+
+
+/************************************************************************/
+/** \brief Cleanup prior to exit
+**
+**  \par Description
+**       This function handles any necessary cleanup prior
+**       to application exit.
+**
+**  \par Assumptions, External Events, and Notes:
+**       None
+**
+*************************************************************************/
+void MS5611_CleanupCallback(void);
+
 
 #ifdef __cplusplus
 }
