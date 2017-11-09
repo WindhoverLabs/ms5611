@@ -577,6 +577,9 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     }
 
     *Pressure = (int32)((D1 * SENS / (1 << 21) - OFF) / (1 << 15) );
+    /* Update diagnostic message */
+    Diag.Pressure = *Pressure;
+    Diag.Temperature = *Temperature;
 }
 
 
