@@ -271,7 +271,7 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
                 break;
             default:
                 (void) CFE_EVS_SendEvent(MS5611_MSGID_ERR_EID, CFE_EVS_ERROR,
-                     "Recvd invalid SCH msgId (0x%04X)", MsgId);
+                        "Recvd invalid SCH msgId (0x%04X)", MsgId);
         }
     }
     else if (iStatus == CFE_SB_NO_MESSAGE)
@@ -292,7 +292,7 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
     else
     {
         (void) CFE_EVS_SendEvent(MS5611_RCVMSG_ERR_EID, CFE_EVS_ERROR,
-              "SCH pipe read error (0x%08lX).", iStatus);
+                "SCH pipe read error (0x%08lX).", iStatus);
     }
 
     return iStatus;
@@ -329,7 +329,7 @@ void MS5611::ProcessCmdPipe()
                      *  pipe, but not handled in this switch-case.) */
                     HkTlm.usCmdErrCnt++;
                     (void) CFE_EVS_SendEvent(MS5611_MSGID_ERR_EID, CFE_EVS_ERROR,
-                                      "Recvd invalid CMD msgId (0x%04X)", (unsigned short)CmdMsgId);
+                                "Recvd invalid CMD msgId (0x%04X)", (unsigned short)CmdMsgId);
                     break;
             }
         }
