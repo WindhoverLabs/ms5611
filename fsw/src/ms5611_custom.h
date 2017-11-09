@@ -107,6 +107,10 @@ boolean MS5611_Custom_Uninit(void);
 
 boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
 
+boolean MS5611_D1Conversion(void);
+boolean MS5611_D2Conversion(void);
+boolean MS5611_ReadADCResult(uint32 *returnVal);
+
 #ifdef __cplusplus
 }
 #endif 

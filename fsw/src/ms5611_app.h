@@ -290,6 +290,8 @@ public:
      *************************************************************************/
     boolean VerifyCmdLength(CFE_SB_Msg_t* MsgPtr, uint16 usExpectedLen);
 
+    void GetMeasurement(int32 *Pressure, int32 *Temperature);
+
 };
 
 

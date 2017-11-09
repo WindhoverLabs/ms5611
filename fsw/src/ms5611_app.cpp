@@ -503,6 +503,71 @@ void MS5611::AppMain()
 }
 
 
+void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
+{
+    uint32 D1 = 0;  //ADC value of the pressure conversion
+    uint32 D2 = 0;  //ADC value of the temperature conversion
+    int32 dT = 0;   //difference between actual and measured temp.
+    int64 OFF = 0;  //offset at actual temperature
+    int64 SENS = 0; //sensitivity at actual temperature
+    int32 T2 = 0;
+    int64 OFF2 = 0;
+    int64 SENS2 = 0;
+    int64 TEMP = 0;
+    boolean returnBool = TRUE;
+
+    returnBool = MS5611_D1Conversion();
+    if (FALSE == returnBool)
+    {
+        /* Handle error condition */
+    }
+
+    returnBool = MS5611_ReadADCResult(&D1);
+    if (FALSE == returnBool)
+    {
+        /* Handle error condition */
+    }
+
+    returnBool = MS5611_D2Conversion();
+    if (FALSE == returnBool)
+    {
+        /* Handle error condition */
+    }
+    
+    returnBool = MS5611_ReadADCResult(&D2);
+    if (FALSE == returnBool)
+    {
+        /* Handle error condition */
+    }
+
+    dT    = D2 - MS5611_Coefficients[5] * (1 << 8);
+    OFF   = MS5611_Coefficients[2] * (1 << 16) + (dT * MS5611_Coefficients[4]) / (1 << 7);
+    SENS  = MS5611_Coefficients[1] * (1 << 15) + (dT * MS5611_Coefficients[3]) / (1 << 8);
+    *Temperature = 2000 + dT * MS5611_Coefficients[6] / (1 << 23);
+
+    /* Second order temperature compensation */
+    if(*Temperature < 2000)
+    {
+        T2    = (dT *dT) >> 31;
+        TEMP  = *Temperature - 2000;
+        OFF2  = (5 *  TEMP * TEMP) >> 1;
+        SENS2 = OFF2 >> 1;
+
+        if(*Temperature < -1500)
+        {
+            TEMP  = *Temperature + 1500;
+            OFF2  = OFF2 + 7 * TEMP * TEMP;
+            SENS2 = (SENS2 + (11 * TEMP * TEMP) ) >> 1;
+        }
+
+        *Temperature -= T2;
+        OFF   -= OFF2;
+        SENS  -= SENS2;
+    }
+
+    *Pressure = (int32)((D1 * SENS / (1 << 21) - OFF) / (1 << 15) );
+}
+
 void MS5611_CleanupCallback(void)
 {
     if(MS5611_Custom_Uninit() != TRUE)
