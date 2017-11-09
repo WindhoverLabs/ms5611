@@ -51,6 +51,7 @@ extern "C" {
 /************************************************************************
 ** Local Defines
 *************************************************************************/
+#define MS5611_COEF_SIZE    8
 
 /************************************************************************
 ** MS5611 Command Codes
@@ -163,8 +164,8 @@ typedef struct
 */
 typedef struct
 {
-    uint8           TlmHeader[CFE_SB_TLM_HDR_SIZE];   
-
+    uint8           TlmHeader[CFE_SB_TLM_HDR_SIZE];
+    uint16          Coefficients[MS5611_COEF_SIZE];
 } MS5611_DiagPacket_t;
 
 

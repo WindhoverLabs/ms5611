@@ -20,7 +20,6 @@
 MS5611 oMS5611;
 
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* Default constructor.                                            */
@@ -41,6 +40,7 @@ MS5611::~MS5611()
 {
 
 }
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -156,7 +156,7 @@ void MS5611::InitData()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* MS5611 initialization                                              */
+/* MS5611 initialization                                           */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 int32 MS5611::InitApp()
@@ -196,6 +196,8 @@ int32 MS5611::InitApp()
     for(i = 0; i < MS5611_COEF_SIZE; ++i)
     {
         returnBool = MS5611_ReadPROM(i, &MS5611_Coefficients[i]);
+        /* Copy to diagnostic message */
+        Diag.Coefficients[i] = MS5611_Coefficients[i];
         if (FALSE == returnBool)
         {
             iStatus = -1;
@@ -241,7 +243,6 @@ MS5611_InitApp_Exit_Tag:
 /* Receive and Process Messages                                    */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
 {
     int32           iStatus=CFE_SUCCESS;
@@ -303,7 +304,6 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
 /* Process Incoming Commands                                       */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void MS5611::ProcessCmdPipe()
 {
     int32 iStatus = CFE_SUCCESS;
@@ -349,10 +349,9 @@ void MS5611::ProcessCmdPipe()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Process MS5611 Commands                                            */
+/* Process MS5611 Commands                                         */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void MS5611::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
 {
     uint32  uiCmdCode=0;
@@ -380,7 +379,9 @@ void MS5611::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
                     HkTlm.usCmdCnt = 0;
                     HkTlm.usCmdErrCnt = 0;
                     break;
+
                 case MS5611_SEND_DIAG_TLM_CC:
+                    HkTlm.usCmdCnt++;
                     ReportDiagnostic();
                     break;
     
@@ -399,7 +400,6 @@ void MS5611::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
 /* Send MS5611 Housekeeping                                        */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void MS5611::ReportHousekeeping()
 {
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&HkTlm);
@@ -412,7 +412,6 @@ void MS5611::ReportHousekeeping()
 /* Send MS5611 Diagnostic                                          */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void MS5611::ReportDiagnostic()
 {
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&Diag);
@@ -455,7 +454,7 @@ boolean MS5611::VerifyCmdLength(CFE_SB_Msg_t* MsgPtr,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* MS5611 Application C style main entry point.                       */
+/* MS5611 Application C style main entry point.                    */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 extern "C" void MS5611_AppMain()
@@ -466,7 +465,7 @@ extern "C" void MS5611_AppMain()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* MS5611 Application C++ style main entry point.                     */
+/* MS5611 Application C++ style main entry point.                  */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void MS5611::AppMain()
@@ -604,7 +603,6 @@ void MS5611::ReadDevice(void)
 
     /* current pressure at MSL in kPa */
     double p1 = 101325 / 1000.0;
-
     /* measured pressure in kPa */
     double p = pressure / 1000.0;
 
