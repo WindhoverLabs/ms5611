@@ -104,6 +104,23 @@ boolean MS5611_Custom_Init(void);
 *************************************************************************/
 boolean MS5611_Custom_Uninit(void);
 
+/************************************************************************/
+/** \brief Custom function to initialize custom events. 
+**
+**  \par Description
+**       This function is called in init event before CFE_EVS_Register
+**       to add custom events to the event filter table.
+**
+**  \par Assumptions, External Events, and Notes:
+**       This function must be defined, but not all custom
+**       layers will do anything in this function.
+**
+**  \returns
+**       The number of events written to the filter table and -1 for 
+**       failure i.e. CFE_EVS_MAX_EVENT_FILTERS reached.
+**
+*************************************************************************/
+int32 MS5611_Custom_Init_EventFilters(int32 ind, CFE_EVS_BinFilter_t *EventTbl);
 
 boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
 

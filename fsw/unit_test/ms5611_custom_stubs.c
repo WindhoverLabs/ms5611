@@ -73,3 +73,8 @@ boolean MS5611_ReadADCResult(uint32 *returnVal)
 {
     return TRUE;
 }
+
+int32 MS5611_Custom_Init_EventFilters(int32 ind, CFE_EVS_BinFilter_t *EventTbl)
+{
+    return 0;
+}
