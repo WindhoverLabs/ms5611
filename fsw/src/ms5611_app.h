@@ -308,7 +308,42 @@ public:
      **
      *************************************************************************/
     void ReadDevice(void);
+    
+    /************************************************************************/
+    /** \brief Calculate the CRC code.
+     **
+     **  \par Description
+     **       This calculates the CRC code saved in the last 4 bits of
+     **       MS5611 PROM.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     **  \param [in]    n_prom    The PROM memory array of the MS5611.
+     **
+     ** 
+     **  \returns The calculated crc code.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     *************************************************************************/
+    uint8 CRC4(uint16 n_prom[]);
 
+    /************************************************************************/
+    /** \brief Validate the CRC code.
+     **
+     **  \par Description
+     **       This validates the CRC code saved in the last 4 bits of
+     **       MS5611 PROM.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     **  \returns TRUE for success, FALSE for failure.
+     **
+     *************************************************************************/
+    boolean ValidateCRC(void);
 };
 
 

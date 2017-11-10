@@ -90,7 +90,7 @@ int32 MS5611::InitPipe()
         if (iStatus != CFE_SUCCESS)
         {
             (void) CFE_EVS_SendEvent(MS5611_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                     "CMD Pipe failed to subscribe to MS5611_SEND_HK_MID. (0x%08X)",
+                     "CMD Pipe failed to subscribe to MS5611_SEND_HK_MID. (0x%08lX)",
                      (unsigned int)iStatus);
             goto MS5611_InitPipe_Exit_Tag;
         }
@@ -196,6 +196,7 @@ int32 MS5611::InitApp()
     for(i = 0; i < MS5611_COEF_SIZE; ++i)
     {
         returnBool = MS5611_ReadPROM(i, &MS5611_Coefficients[i]);
+        OS_printf("MS5611 coeffient %d = %d\n", i, MS5611_Coefficients[i]);
         /* Copy to diagnostic message */
         Diag.Coefficients[i] = MS5611_Coefficients[i];
         if (FALSE == returnBool)
@@ -204,6 +205,17 @@ int32 MS5611::InitApp()
             goto MS5611_InitApp_Exit_Tag; 
         }
     }
+    
+    /* Validate the CRC code */
+    returnBool = ValidateCRC();
+    if (FALSE == returnBool)
+    {
+        CFE_EVS_SendEvent(MS5611_INIT_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 failed CRC check");
+        iStatus = -1;
+        goto MS5611_InitApp_Exit_Tag;
+    }
+    
     HkTlm.State = MS5611_INITIALIZED;
 
     /* Register the cleanup callback */
@@ -264,9 +276,11 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
         switch (MsgId)
         {
             case MS5611_SEND_HK_MID:
+                OS_printf("MS5611 send HK hit\n");
                 ReportHousekeeping();
                 break;
             case MS5611_MEASURE_MID:
+                OS_printf("MS5611 measure mid hit\n");
                 ReadDevice();
                 break;
             default:
@@ -620,8 +634,74 @@ void MS5611::ReadDevice(void)
      */
     SensorBaro.Altitude = (((pow((p / p1), (-(a * R) / g))) * T1) - T1) / a;
 
+    OS_printf("MS5611 Temperature = %ld\n", SensorBaro.Temperature);
+    OS_printf("MS5611 Pressure = %ld\n", SensorBaro.Pressure);
+    OS_printf("MS5611 Altitude = %ld\n", SensorBaro.Altitude);
+    
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
     CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);
+}
+
+
+uint8 MS5611::CRC4(uint16 n_prom[])
+{
+    int cnt; 
+    /* crc remainder */
+    uint16 n_rem; 
+    /* original crc value */
+    uint16 crc_read; 
+    uint8 n_bit;
+    n_rem = 0x00;
+
+    /* save the original CRC */
+    crc_read = n_prom[7];
+    /* replace the crc byte with 0 */
+    n_prom[7] = (0xFF00 & (n_prom[7])); 
+    /* operation is performed on bytes */
+    for (cnt = 0; cnt < 16; cnt++) 
+    {
+        /* choose LSB or MSB */
+        if (cnt%2==1) n_rem ^= (uint16) ((n_prom[cnt>>1]) & 0x00FF);
+        else n_rem ^= (uint16) (n_prom[cnt>>1]>>8);
+        for (n_bit = 8; n_bit > 0; n_bit--)
+        {
+            if (n_rem & (0x8000))
+            {
+            n_rem = (n_rem << 1) ^ 0x3000;
+            }
+            else
+            {
+                n_rem = (n_rem << 1);
+            }
+        }
+    }
+    /* the final 4-bit remainder is the CRC code */
+    n_rem = (0x000F & (n_rem >> 12));
+    /* Restore the crc_read to its original value */
+    n_prom[7] = crc_read;
+    return (n_rem ^ 0x00);
+}
+
+
+boolean MS5611::ValidateCRC(void)
+{
+    unsigned char returnedCRC = 0;
+    uint16 promCRC = 0;
+    /* CRC code is in the last 4-bits */
+    uint16 bitmask = 0x0F;
+    /* Get CRC value from PROM */
+    promCRC = bitmask & MS5611_Coefficients[7];
+    /* Calculate CRC */
+    returnedCRC = CRC4(MS5611_Coefficients);
+
+    if(promCRC == returnedCRC)
+    {
+        return TRUE;
+    }
+    CFE_EVS_SendEvent(MS5611_INIT_ERR_EID, CFE_EVS_ERROR,
+            "MS5611 CRC check failed PROM = %u: CRC = %u",
+            (unsigned int)promCRC, (unsigned int) returnedCRC);
+    return FALSE;
 }
 
 
