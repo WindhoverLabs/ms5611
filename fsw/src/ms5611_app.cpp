@@ -565,6 +565,8 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     int64 OFF2 = 0;
     int64 SENS2 = 0;
     int64 TEMP = 0;
+    int32 TempValidate = 0;
+    int32 PressValidate = 0;
     boolean returnBool = TRUE;
 
     returnBool = MS5611_D1Conversion();
@@ -607,8 +609,18 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     
     OFF   = MS5611_Coefficients[2] * (1 << 16) + (dT * MS5611_Coefficients[4]) / (1 << 7);
     SENS  = MS5611_Coefficients[1] * (1 << 15) + (dT * MS5611_Coefficients[3]) / (1 << 8);
-    *Temperature = 2000 + dT * MS5611_Coefficients[6] / (1 << 23);
-
+    TempValidate = 2000 + dT * MS5611_Coefficients[6] / (1 << 23);
+    if(TempValidate > MS5611_TEMP_MIN && TempValidate < MS5611_TEMP_MAX)
+    {
+        *Temperature = TempValidate;
+    }
+    else
+    {
+        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 temperature out of range value = %ld", TempValidate);
+        returnBool = FALSE;
+        goto end_of_function;
+    }
     /* Second order temperature compensation */
     if(*Temperature < 2000)
     {
@@ -628,9 +640,19 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
         OFF   -= OFF2;
         SENS  -= SENS2;
     }
-
-    *Pressure = (int32)((D1 * SENS / (1 << 21) - OFF) / (1 << 15) );
-
+    
+    PressValidate = (int32)((D1 * SENS / (1 << 21) - OFF) / (1 << 15) );
+    if(PressValidate > MS5611_PRESS_MIN && PressValidate < MS5611_PRESS_MAX)
+    {
+        *Pressure = PressValidate;
+    }
+    else
+    {
+        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 pressure out of range value = %ld", PressValidate);
+        returnBool = FALSE;
+        goto end_of_function;
+    }
     /* Update diagnostic message */
     Diag.Pressure = *Pressure;
     Diag.Temperature = *Temperature;
