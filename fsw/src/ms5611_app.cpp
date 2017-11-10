@@ -525,7 +525,7 @@ void MS5611::AppMain()
 }
 
 
-void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
+boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
 {
     uint32 D1 = 0;  //ADC value of the pressure conversion
     uint32 D2 = 0;  //ADC value of the temperature conversion
@@ -543,7 +543,8 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     {
         CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
                 "MS5611 get measurement D1 conversion failed");
-        /* TODO Handle error condition */
+        returnBool = FALSE;
+        goto end_of_function;
     }
 
     returnBool = MS5611_ReadADCResult(&D1);
@@ -551,7 +552,8 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     {
         CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
                 "MS5611 read ADC result D1 failed");
-        /* TODO Handle error condition */
+        returnBool = FALSE;
+        goto end_of_function;
     }
 
     returnBool = MS5611_D2Conversion();
@@ -559,7 +561,8 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     {
         CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
                 "MS5611 get measurement D2 conversion failed");
-        /* TODO Handle error condition */
+        returnBool = FALSE;
+        goto end_of_function;
     }
     
     returnBool = MS5611_ReadADCResult(&D2);
@@ -567,7 +570,8 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     {
         CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
                 "MS5611 read ADC result D2 failed");
-        /* TODO Handle error condition */
+        returnBool = FALSE;
+        goto end_of_function;
     }
 
     dT    = D2 - MS5611_Coefficients[5] * (1 << 8);
@@ -601,6 +605,9 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     /* Update diagnostic message */
     Diag.Pressure = *Pressure;
     Diag.Temperature = *Temperature;
+
+end_of_function:
+    return returnBool;
 }
 
 
@@ -608,44 +615,53 @@ void MS5611::ReadDevice(void)
 {
     int32 pressure = 0;
     int32 temperature = 0;
+    boolean returnBool = TRUE;
 
-    GetMeasurement(&pressure, &temperature);
+    returnBool = GetMeasurement(&pressure, &temperature);
+    if (FALSE == returnBool)
+    {
+        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 read failure, altitude not updated");
+        /* TODO handle error condition */
+    }
+    else
+    {
+        SensorBaro.Temperature = temperature / 100.0f;
+        /* convert to millibar */
+        SensorBaro.Pressure = pressure / 100.0f;
+    
+        /* tropospheric properties (0-11km) for standard atmosphere */
+        /* temperature at base height in Kelvin */
+        const double T1 = 15.0 + 273.15;
+        /* temperature gradient in degrees per metre */
+        const double a  = -6.5 / 1000;
+        /* gravity constant in m/s/s */
+        const double g  = 9.80665;
+        /* ideal gas constant in J/kg/K */
+        const double R  = 287.05;
+    
+        /* current pressure at MSL in kPa */
+        double p1 = 101325 / 1000.0;
+        /* measured pressure in kPa */
+        double p = pressure / 1000.0;
+    
+        /*
+         * Solve:
+         *
+         *     /        -(aR / g)     \
+         *    | (p / p1)          . T1 | - T1
+         *     \                      /
+         * h = -------------------------------  + h1
+         *                   a
+         */
+        SensorBaro.Altitude = (((pow((p / p1), (-(a * R) / g))) * T1) - T1) / a;
+    
+        /* Update diagnostic message */
+        Diag.Altitude = SensorBaro.Altitude;
 
-    SensorBaro.Temperature = temperature / 100.0f;
-    /* convert to millibar */
-    SensorBaro.Pressure = pressure / 100.0f;
-
-    /* tropospheric properties (0-11km) for standard atmosphere */
-    /* temperature at base height in Kelvin */
-    const double T1 = 15.0 + 273.15;
-    /* temperature gradient in degrees per metre */
-    const double a  = -6.5 / 1000;
-    /* gravity constant in m/s/s */
-    const double g  = 9.80665;
-    /* ideal gas constant in J/kg/K */
-    const double R  = 287.05;
-
-    /* current pressure at MSL in kPa */
-    double p1 = 101325 / 1000.0;
-    /* measured pressure in kPa */
-    double p = pressure / 1000.0;
-
-    /*
-     * Solve:
-     *
-     *     /        -(aR / g)     \
-     *    | (p / p1)          . T1 | - T1
-     *     \                      /
-     * h = -------------------------------  + h1
-     *                   a
-     */
-    SensorBaro.Altitude = (((pow((p / p1), (-(a * R) / g))) * T1) - T1) / a;
-
-    /* Update diagnostic message */
-    Diag.Altitude = SensorBaro.Altitude;
-
-    CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
-    CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);
+        CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
+        CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);
+    }
 }
 
 

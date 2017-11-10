@@ -295,7 +295,27 @@ public:
      *************************************************************************/
     boolean VerifyCmdLength(CFE_SB_Msg_t* MsgPtr, uint16 usExpectedLen);
 
-    void GetMeasurement(int32 *Pressure, int32 *Temperature);
+    /************************************************************************/
+    /** \brief Get pressure and temperature from the MS5611.
+     **
+     **  \par Description
+     **       This function gets MS5611 pressure and temperature from 
+     **       the MS5611 barometric altimeter.
+     **
+     **  \par Assumptions, External Events, and Notes:
+     **       None
+     **
+     **  \param [out]   Pressure    Pointer to store value.
+     **
+     **  \param [out]   Temperature    Pointer to store value.
+     **
+     **  \returns
+     **  TRUE if successful, FALSE for failure.
+     **  \endreturns
+     **
+     *************************************************************************/
+    boolean GetMeasurement(int32 *Pressure, int32 *Temperature);
+
     /************************************************************************/
     /** \brief Sends the SensorBaro message.
      **
