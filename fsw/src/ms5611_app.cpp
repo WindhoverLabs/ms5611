@@ -90,7 +90,7 @@ int32 MS5611::InitPipe()
         if (iStatus != CFE_SUCCESS)
         {
             (void) CFE_EVS_SendEvent(MS5611_SUBSCRIBE_ERR_EID, CFE_EVS_ERROR,
-                     "CMD Pipe failed to subscribe to MS5611_SEND_HK_MID. (0x%08lX)",
+                     "CMD Pipe failed to subscribe to MS5611_SEND_HK_MID. (0x%08X)",
                      (unsigned int)iStatus);
             goto MS5611_InitPipe_Exit_Tag;
         }
@@ -196,7 +196,6 @@ int32 MS5611::InitApp()
     for(i = 0; i < MS5611_COEF_SIZE; ++i)
     {
         returnBool = MS5611_ReadPROM(i, &MS5611_Coefficients[i]);
-        OS_printf("MS5611 coeffient %d = %d\n", i, MS5611_Coefficients[i]);
         /* Copy to diagnostic message */
         Diag.Coefficients[i] = MS5611_Coefficients[i];
         if (FALSE == returnBool)
@@ -276,11 +275,9 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
         switch (MsgId)
         {
             case MS5611_SEND_HK_MID:
-                OS_printf("MS5611 send HK hit\n");
                 ReportHousekeeping();
                 break;
             case MS5611_MEASURE_MID:
-                OS_printf("MS5611 measure mid hit\n");
                 ReadDevice();
                 break;
             default:
@@ -544,28 +541,37 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     returnBool = MS5611_D1Conversion();
     if (FALSE == returnBool)
     {
-        /* Handle error condition */
+        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 get measurement D1 conversion failed");
+        /* TODO Handle error condition */
     }
 
     returnBool = MS5611_ReadADCResult(&D1);
     if (FALSE == returnBool)
     {
-        /* Handle error condition */
+        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 read ADC result D1 failed");
+        /* TODO Handle error condition */
     }
 
     returnBool = MS5611_D2Conversion();
     if (FALSE == returnBool)
     {
-        /* Handle error condition */
+        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 get measurement D2 conversion failed");
+        /* TODO Handle error condition */
     }
     
     returnBool = MS5611_ReadADCResult(&D2);
     if (FALSE == returnBool)
     {
-        /* Handle error condition */
+        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                "MS5611 read ADC result D2 failed");
+        /* TODO Handle error condition */
     }
 
     dT    = D2 - MS5611_Coefficients[5] * (1 << 8);
+    
     OFF   = MS5611_Coefficients[2] * (1 << 16) + (dT * MS5611_Coefficients[4]) / (1 << 7);
     SENS  = MS5611_Coefficients[1] * (1 << 15) + (dT * MS5611_Coefficients[3]) / (1 << 8);
     *Temperature = 2000 + dT * MS5611_Coefficients[6] / (1 << 23);
@@ -591,6 +597,7 @@ void MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     }
 
     *Pressure = (int32)((D1 * SENS / (1 << 21) - OFF) / (1 << 15) );
+
     /* Update diagnostic message */
     Diag.Pressure = *Pressure;
     Diag.Temperature = *Temperature;
@@ -634,10 +641,9 @@ void MS5611::ReadDevice(void)
      */
     SensorBaro.Altitude = (((pow((p / p1), (-(a * R) / g))) * T1) - T1) / a;
 
-    OS_printf("MS5611 Temperature = %ld\n", SensorBaro.Temperature);
-    OS_printf("MS5611 Pressure = %ld\n", SensorBaro.Pressure);
-    OS_printf("MS5611 Altitude = %ld\n", SensorBaro.Altitude);
-    
+    /* Update diagnostic message */
+    Diag.Altitude = SensorBaro.Altitude;
+
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
     CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);
 }

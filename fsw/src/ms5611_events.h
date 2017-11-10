@@ -208,7 +208,7 @@ typedef enum {
 **
 **  \par Cause:
 **
-**  This event message is issued when the CFS MS5611Task has
+**  This event message is issued when the CFS MS5611 Task has
 **  received a message with an invalid length.
 **
 **  The first \c %d field contains the message ID.
@@ -224,7 +224,7 @@ typedef enum {
 **
 **  \par Cause:
 **
-**  This event message is issued when RGBLED has
+**  This event message is issued when MS5611 has
 **  had an error processing a command.
 **
 */
@@ -236,7 +236,7 @@ typedef enum {
 **
 **  \par Cause:
 **
-**  This event message is issued when RGBLED has
+**  This event message is issued when MS5611 has
 **  had an error in uninitialization.
 **
 */
@@ -248,12 +248,24 @@ typedef enum {
 **
 **  \par Cause:
 **
-**  This event message is issued when the RGBLED has
+**  This event message is issued when the MS5611 has
 **  had an error in initialization.
 **
 */
     MS5611_INIT_ERR_EID,
-    
+
+/** \brief <tt> 'MS5611 - ' </tt>
+**  \event <tt> 'MS5611 - ' </tt>
+**  
+**  \par Type: ERROR
+**
+**  \par Cause:
+**
+**  This event message is issued when the MS5611 has
+**  had an error in initialization.
+**
+*/
+    MS5611_READ_ERR_EID,
 
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
 	MS5611_EVT_CNT

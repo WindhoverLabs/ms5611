@@ -123,7 +123,7 @@ extern "C" {
 #define MS5611_RESET_CC                (1)
 
 
-#define MS5611_SEND_DIAG_TLM_CC        (7)
+#define MS5611_SEND_DIAG_TLM_CC        (2)
 
 /************************************************************************
 ** Local Structure Declarations
@@ -168,6 +168,7 @@ typedef struct
     uint16          Coefficients[MS5611_COEF_SIZE];
     uint32          Pressure;
     uint32          Temperature;
+    float           Altitude;
 } MS5611_DiagPacket_t;
 
 
