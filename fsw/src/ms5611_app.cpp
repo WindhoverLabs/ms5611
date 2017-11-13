@@ -304,11 +304,14 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
         switch (MsgId)
         {
             case MS5611_SEND_HK_MID:
+            	ProcessCmdPipe();
                 ReportHousekeeping();
                 break;
+
             case MS5611_MEASURE_MID:
                 ReadDevice();
                 break;
+
             default:
                 (void) CFE_EVS_SendEvent(MS5611_MSGID_ERR_EID, CFE_EVS_ERROR,
                         "Recvd invalid SCH msgId (0x%04X)", MsgId);
