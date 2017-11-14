@@ -605,11 +605,18 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
         goto end_of_function;
     }
 
-    dT    = D2 - MS5611_Coefficients[5] * (1 << 8);
-    
-    OFF   = MS5611_Coefficients[2] * (1 << 16) + (dT * MS5611_Coefficients[4]) / (1 << 7);
-    SENS  = MS5611_Coefficients[1] * (1 << 15) + (dT * MS5611_Coefficients[3]) / (1 << 8);
-    TempValidate = 2000 + dT * MS5611_Coefficients[6] / (1 << 23);
+    /* D2 - C5 * 2^8 */
+    dT    = D2 - MS5611_Coefficients[5] * (0x100l);
+    /* The following two equations must be solved with 64-bit integers (long long int)
+     * or overflow could occur. Note integer-suffix ll. */
+
+    /* C2 * 2^16 + (C4 * dT )/ 2^7 */
+    OFF   = MS5611_Coefficients[2] * (0x10000ll) + (dT * MS5611_Coefficients[4]) / (0x80ll);
+    /* C1 * 2^15 + (C3 * dT )/ 2^8 */
+    SENS  = MS5611_Coefficients[1] * (0x8000ll) + (dT * MS5611_Coefficients[3]) / (0x100ll);
+    /* 2000 + dT * C6 / 2^23 */
+    TempValidate = 2000 + dT * MS5611_Coefficients[6] / (0x800000l);
+
     if(TempValidate > MS5611_TEMP_MIN && TempValidate < MS5611_TEMP_MAX)
     {
         *Temperature = TempValidate;
@@ -640,8 +647,9 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
         OFF   -= OFF2;
         SENS  -= SENS2;
     }
-    
-    PressValidate = (int32)((D1 * SENS / (1 << 21) - OFF) / (1 << 15) );
+    /*  (D1 * SENS / 2^21 - OFF) / 2^15*/
+    PressValidate = (int32)((D1 * SENS / (0x200000l) - OFF) / (0x8000l) );
+
     if(PressValidate > MS5611_PRESS_MIN && PressValidate < MS5611_PRESS_MAX)
     {
         *Pressure = PressValidate;
