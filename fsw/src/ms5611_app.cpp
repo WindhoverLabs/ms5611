@@ -10,6 +10,7 @@
 #include "ms5611_msg.h"
 #include "ms5611_version.h"
 #include <math.h>
+#include "lib/px4lib.h"
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -720,6 +721,8 @@ void MS5611::ReadDevice(void)
     
         /* Update diagnostic message */
         Diag.Altitude = SensorBaro.Altitude;
+
+        SensorBaro.Timestamp = PX4LIB_GetPX4TimeUs();
 
         CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
         CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);

@@ -78,3 +78,8 @@ int32 MS5611_Custom_Init_EventFilters(int32 ind, CFE_EVS_BinFilter_t *EventTbl)
 {
     return 0;
 }
+
+uint64 PX4LIB_GetPX4TimeUs(void)
+{
+    return 0;
+}
