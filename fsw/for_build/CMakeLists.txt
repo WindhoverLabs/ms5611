@@ -35,7 +35,9 @@ add_airliner_app_def(ms5611
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_app.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_app.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_config_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_events.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_tbldefs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_msg.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_version.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_custom.h
@@ -54,6 +56,9 @@ add_airliner_app_unit_test(ms5611-ut
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_app_test.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_cmds_test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_cmds_test.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_config_tbl_test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_config_tbl_test.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_config_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_testrunner.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_test_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/ms5611_test_utils.h

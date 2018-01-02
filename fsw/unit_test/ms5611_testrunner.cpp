@@ -34,11 +34,13 @@
 #include "uttest.h"
 #include "ms5611_app_test.h"
 #include "ms5611_cmds_test.h"
+#include "ms5611_config_tbl_test.h"
 
 int main(void)
 {   
     MS5611_App_Test_AddTestCases();
     MS5611_Cmds_Test_AddTestCases();
+    MS5611_Config_Tbl_Test_AddTestCases();
 
     return(UtTest_Run());
 

@@ -296,6 +296,26 @@ void Test_MS5611_InitApp_Fail_InitData(void)
 
 
 /**
+ * Test MS5611_InitApp(), fail init config table
+ */
+void Test_MS5611_InitApp_Fail_InitConfigTbl(void)
+{
+    MS5611 oMS5611;
+
+    int32 result = CFE_SUCCESS;
+    int32 expected = CFE_TBL_ERR_INVALID_NAME;
+
+    Ut_CFE_TBL_SetReturnCode(UT_CFE_TBL_REGISTER_INDEX, expected, 1);
+
+    /* Execute the function being tested */
+    result = oMS5611.InitApp();
+
+    /* Verify results */
+    UtAssert_True (result == expected, "InitApp, fail init config table");
+}
+
+
+/**
  * Test MS5611_InitApp(), Nominal
  */
 void Test_MS5611_InitApp_Nominal(void)
@@ -341,6 +361,21 @@ void Test_MS5611_AppMain_Fail_InitApp(void)
 
     /* fail the register app */
     Ut_CFE_EVS_SetReturnCode(UT_CFE_EVS_REGISTER_INDEX, CFE_EVS_APP_NOT_REGISTERED, 1);
+
+    /* Execute the function being tested */
+    oMS5611.AppMain();
+}
+
+
+/**
+ * Test MS5611_AppMain(), Fail AcquireConfigPtrs
+ */
+void Test_MS5611_AppMain_Fail_AcquireConfigPtrs(void)
+{
+    MS5611 oMS5611;
+
+    /* fail the register app */
+    Ut_CFE_TBL_SetReturnCode(UT_CFE_TBL_GETADDRESS_INDEX, CFE_TBL_ERR_INVALID_HANDLE, 2);
 
     /* Execute the function being tested */
     oMS5611.AppMain();
@@ -454,6 +489,8 @@ void MS5611_App_Test_AddTestCases(void)
                "Test_MS5611_InitApp_Fail_InitPipe");
     UtTest_Add(Test_MS5611_InitApp_Fail_InitData, MS5611_Test_Setup, MS5611_Test_TearDown,
                "Test_MS5611_InitApp_Fail_InitData");
+    UtTest_Add(Test_MS5611_InitApp_Fail_InitConfigTbl, MS5611_Test_Setup, MS5611_Test_TearDown,
+               "Test_MS5611_InitApp_Fail_InitConfigTbl");
     UtTest_Add(Test_MS5611_InitApp_Nominal, MS5611_Test_Setup, MS5611_Test_TearDown,
                "Test_MS5611_InitApp_Nominal");
 
@@ -461,6 +498,8 @@ void MS5611_App_Test_AddTestCases(void)
                "Test_MS5611_AppMain_Fail_RegisterApp");
     UtTest_Add(Test_MS5611_AppMain_Fail_InitApp, MS5611_Test_Setup, MS5611_Test_TearDown,
                "Test_MS5611_AppMain_Fail_InitApp");
+    UtTest_Add(Test_MS5611_AppMain_Fail_AcquireConfigPtrs, MS5611_Test_Setup, MS5611_Test_TearDown,
+               "Test_MS5611_AppMain_Fail_AcquireConfigPtrs");
     UtTest_Add(Test_MS5611_AppMain_InvalidSchMessage, MS5611_Test_Setup, MS5611_Test_TearDown,
                "Test_MS5611_AppMain_InvalidSchMessage");
     UtTest_Add(Test_MS5611_AppMain_Nominal_SendHK, MS5611_Test_Setup, MS5611_Test_TearDown,

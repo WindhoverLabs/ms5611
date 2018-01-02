@@ -31,51 +31,17 @@
 *
 *****************************************************************************/
 
-#include "cfe.h"
-#include "ms5611_test_utils.h"
-#include "ut_cfe_evs_hooks.h"
-#include "ut_cfe_time_stubs.h"
-#include "ut_cfe_psp_memutils_stubs.h"
-#include "ut_cfe_tbl_stubs.h"
-#include "ut_cfe_tbl_hooks.h"
-#include "ut_cfe_fs_stubs.h"
-#include "ut_cfe_time_stubs.h"
-#include "ut_osapi_stubs.h"
-#include "ut_osfileapi_stubs.h"
-#include "ut_cfe_sb_stubs.h"
-#include "ut_cfe_es_stubs.h"
-#include "ut_cfe_evs_stubs.h"
+#ifndef MS5611_CONFIG_TBL_TEST_H
+#define MS5611_CONFIG_TBL_TEST_H
 
-#include <time.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Config table for testing
- */
-MS5611_ConfigTbl_t ConfigTbl = {
-        /* TODO:  Define table */
-		0
-};
+void MS5611_Config_Tbl_Test_AddTestCases(void);
 
-/*
- * Function Definitions
- */
-
-void MS5611_Test_Setup(void)
-{
-    /* initialize test environment to default state for every test */
-
-    Ut_CFE_EVS_Reset();
-    Ut_CFE_FS_Reset();
-    Ut_CFE_TIME_Reset();
-    Ut_CFE_TBL_Reset();
-    Ut_CFE_SB_Reset();
-    Ut_CFE_ES_Reset();
-    Ut_OSAPI_Reset();
-    Ut_OSFILEAPI_Reset();
-
-    Ut_CFE_TBL_AddTable(MS5611_CONFIG_TABLE_FILENAME, (void *) &ConfigTbl);
+#ifdef __cplusplus
 }
+#endif
 
-void MS5611_Test_TearDown(void) {
-
-}
+#endif /* MS5611_CONFIG_TBL_TEST_H */

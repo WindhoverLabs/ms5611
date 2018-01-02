@@ -142,7 +142,23 @@ typedef enum {
 **
 */
 	MS5611_CFGTBL_MANAGE_ERR_EID,
-
+    
+/** \brief <tt> 'Failed to register config table (0x%08X)' </tt>
+**  \event <tt> 'Failed to register config table (0x%08X)' </tt>
+**
+**  \par Type: ERROR
+**
+**  \par Cause:
+**
+**  This event message is issued when the CFS MPU9250 Task fails to
+**  register the MPU9250 configuration table.
+**
+**  The 32 bit hexadecimal number is the error code returned by CFE
+**  #CFE_TBL_Register function.
+**
+*/
+	MS5611_CFGTBL_REG_ERR_EID,
+    
 /** \brief <tt> 'Failed to get Config table's address (0x\%08X)' </tt>
 **  \event <tt> 'Failed to get Config table's address (0x\%08X)' </tt>
 **  
@@ -217,6 +233,23 @@ typedef enum {
 **  The fourth \c %d field contains the expected length.
 */
 	MS5611_MSGLEN_ERR_EID,
+
+/** \brief <tt> 'Failed to register config table (0x%08X)' </tt>
+**  \event <tt> 'Failed to register config table (0x%08X)' </tt>
+**
+**  \par Type: ERROR
+**
+**  \par Cause:
+**
+**  This event message is issued when the CFS MS5611 Task fails to
+**  register the MS5611 configuration table.
+**
+**  The 32 bit hexadecimal number is the error code returned by CFE
+**  #CFE_TBL_Register function.
+**
+*/
+	MPU9250_CFGTBL_REG_ERR_EID,
+
 /** \brief <tt> 'MS5611 - $commandError' </tt>
 **  \event <tt> 'MS5611 - $commandError' </tt>
 **  
@@ -241,6 +274,23 @@ typedef enum {
 **
 */
     MS5611_UNINIT_ERR_EID,
+
+/** \brief <tt> 'Failed to load Config Table (0x%08X)' </tt>
+**  \event <tt> 'Failed to load Config Table (0x%08X)' </tt>
+**
+**  \par Type: ERROR
+**
+**  \par Cause:
+**
+**  This event message is issued when the CFS MS5611 Task fails to
+**  load the MS5611 configuration table.
+**
+**  The 32 bit hexadecimal number is the error code returned by CFE
+**  #CFE_TBL_Load function.
+**
+*/
+    MS5611_CFGTBL_LOAD_ERR_EID,
+
 /** \brief <tt> 'MS5611 - ' </tt>
 **  \event <tt> 'MS5611 - ' </tt>
 **  

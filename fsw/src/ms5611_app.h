@@ -49,6 +49,7 @@ extern "C" {
 
 #include "ms5611_platform_cfg.h"
 #include "ms5611_mission_cfg.h"
+#include "ms5611_tbldefs.h"
 #include "ms5611_perfids.h"
 #include "ms5611_msgids.h"
 #include "ms5611_msg.h"
@@ -98,6 +99,13 @@ public:
 
     /** \brief Task Run Status */
     uint32 uiRunStatus;
+
+   /* Config table-related */
+    /** \brief Config Table Handle */
+    CFE_TBL_Handle_t ConfigTblHdl;
+
+    /** \brief Config Table Pointer */
+    MS5611_ConfigTbl_t* ConfigTblPtr;
 
     /** \brief Output Data published at the end of cycle */
     PX4_SensorBaroMsg_t SensorBaro;
@@ -369,6 +377,63 @@ public:
      **
      *************************************************************************/
     boolean ValidateCRC(void);
+
+private:
+    /************************************************************************/
+    /** \brief Initialize the configuration tables.
+    **
+    **  \par Description
+    **       This function initializes GPS's configuration tables.  This
+    **       includes <TODO>.
+    **
+    **  \par Assumptions, External Events, and Notes:
+    **       None
+    **
+    **  \returns
+    **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS  \endcode
+    **  \retstmt Return codes from #CFE_TBL_Register          \endcode
+    **  \retstmt Return codes from #CFE_TBL_Load              \endcode
+    **  \retstmt Return codes from #GPS_AcquireConfigPointers \endcode
+    **  \endreturns
+    **
+    *************************************************************************/
+    int32  InitConfigTbl(void);
+
+    /************************************************************************/
+    /** \brief Obtain configuration tables data pointers.
+    **
+    **  \par Description
+    **       This function manages the configuration tables
+    **       and obtains a pointer to their data.
+    **
+    **  \par Assumptions, External Events, and Notes:
+    **       None
+    **
+    **  \returns
+    **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS  \endcode
+    **  \endreturns
+    **
+    *************************************************************************/
+    int32  AcquireConfigPointers(void);
+
+public:
+    /************************************************************************/
+    /** \brief Validate configuration table
+    **
+    **  \par Description
+    **       This function validates GPS's configuration table
+    **
+    **  \par Assumptions, External Events, and Notes:
+    **       None
+    **
+    **  \param [in]   ConfigTblPtr    A pointer to the table to validate.
+    **
+    **  \returns
+    **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS  \endcode
+    **  \endreturns
+    **
+    *************************************************************************/
+    static int32  ValidateConfigTbl(void*);
 };
 
 
