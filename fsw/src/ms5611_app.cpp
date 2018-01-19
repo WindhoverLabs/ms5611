@@ -622,16 +622,16 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     }
 
     /* D2 - C5 * 2^8 */
-    dT    = D2 - MS5611_Coefficients[5] * (0x100l);
+    dT    = (int32)D2 - ((int32)MS5611_Coefficients[5] << 8);
     /* The following two equations must be solved with 64-bit integers (long long int)
      * or overflow could occur. Note integer-suffix ll. */
 
     /* C2 * 2^16 + (C4 * dT )/ 2^7 */
-    OFF   = MS5611_Coefficients[2] * (0x10000ll) + (dT * MS5611_Coefficients[4]) / (0x80ll);
+    OFF   = ((int64)MS5611_Coefficients[2] << 16) + (((int64)MS5611_Coefficients[4] * dT) >> 7);
     /* C1 * 2^15 + (C3 * dT )/ 2^8 */
-    SENS  = MS5611_Coefficients[1] * (0x8000ll) + (dT * MS5611_Coefficients[3]) / (0x100ll);
+    SENS  = ((int64)MS5611_Coefficients[1] << 15) + (((int64)MS5611_Coefficients[3] * dT) >> 8);
     /* 2000 + dT * C6 / 2^23 */
-    TempValidate = 2000 + dT * MS5611_Coefficients[6] / (0x800000l);
+    TempValidate = 2000 + (int32)(((int64)dT * MS5611_Coefficients[6]) >> 23);
 
     if(TempValidate > MS5611_TEMP_MIN && TempValidate < MS5611_TEMP_MAX)
     {
@@ -648,15 +648,15 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     if(*Temperature < 2000)
     {
         T2    = (dT * dT) >> 31;
-        TEMP  = *Temperature - 2000;
+        TEMP  = (int64)*Temperature - 2000;
         OFF2  = (5 *  TEMP * TEMP) >> 1;
         SENS2 = (5 *  TEMP * TEMP) >> 2;
 
         if(*Temperature < -1500)
         {
             TEMP  = *Temperature + 1500;
-            OFF2  = OFF2 + 7 * TEMP * TEMP;
-            SENS2 = (SENS2 + (11 * TEMP * TEMP) ) >> 1;
+            OFF2  += 7 * TEMP * TEMP;
+            SENS2 += (11 * TEMP * TEMP) >> 1;
         }
 
         *Temperature -= T2;
@@ -664,7 +664,7 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
         SENS  -= SENS2;
     }
     /*  (D1 * SENS / 2^21 - OFF) / 2^15*/
-    PressValidate = (int32)((D1 * SENS / (0x200000l) - OFF) / (0x8000l) );
+    PressValidate = ((((D1 * SENS) >> 21) - OFF ) >> 15);
 
     if(PressValidate > MS5611_PRESS_MIN && PressValidate < MS5611_PRESS_MAX)
     {
@@ -718,7 +718,7 @@ void MS5611::ReadDevice(void)
         /* current pressure at MSL in kPa */
         double p1 = 101325 / 1000.0;
         /* measured pressure in kPa */
-        double p = pressure / 1000.0;
+        double p = static_cast<double>(pressure) / 1000.0;
     
         /*
          * Solve:
