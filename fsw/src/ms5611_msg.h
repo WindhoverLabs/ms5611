@@ -166,6 +166,7 @@ typedef struct
 {
     uint8           TlmHeader[CFE_SB_TLM_HDR_SIZE];
     uint16          Coefficients[MS5611_COEF_SIZE];
+    uint8           MeasureCount;
     uint32          Pressure;
     uint32          Temperature;
     float           Altitude;

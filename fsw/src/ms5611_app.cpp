@@ -573,7 +573,8 @@ void MS5611::AppMain()
 boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
 {
     uint32 D1 = 0;  //ADC value of the pressure conversion
-    uint32 D2 = 0;  //ADC value of the temperature conversion
+    /* TODO static */
+    static uint32 D2 = 0;  //ADC value of the temperature conversion
     int32 dT = 0;   //difference between actual and measured temp.
     int64 OFF = 0;  //offset at actual temperature
     int64 SENS = 0; //sensitivity at actual temperature
@@ -603,24 +604,35 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
         goto end_of_function;
     }
 
-    returnBool = MS5611_D2Conversion();
-    if (FALSE == returnBool)
-    {
-        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
-                "MS5611 get measurement D2 conversion failed");
-        returnBool = FALSE;
-        goto end_of_function;
+    /* Measurement ratio pressure per temperature measurements */
+    /* TODO move this to platform config */
+    if(0 == Diag.MeasureCount % 3)
+    { 
+        if(0xFF == Diag.MeasureCount)
+        {
+            /* Roll over*/
+            Diag.MeasureCount = 0;
+        }
+        
+        returnBool = MS5611_D2Conversion();
+        if (FALSE == returnBool)
+        {
+            CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                    "MS5611 get measurement D2 conversion failed");
+            returnBool = FALSE;
+            goto end_of_function;
+        }
+        
+        returnBool = MS5611_ReadADCResult(&D2);
+        if (FALSE == returnBool)
+        {
+            CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
+                    "MS5611 read ADC result D2 failed");
+            returnBool = FALSE;
+            goto end_of_function;
+        }
     }
-    
-    returnBool = MS5611_ReadADCResult(&D2);
-    if (FALSE == returnBool)
-    {
-        CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
-                "MS5611 read ADC result D2 failed");
-        returnBool = FALSE;
-        goto end_of_function;
-    }
-
+    Diag.MeasureCount++;
     /* D2 - C5 * 2^8 */
     dT    = (int32)D2 - ((int32)MS5611_Coefficients[5] << 8);
     /* The following two equations must be solved with 64-bit integers (long long int)
