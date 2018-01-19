@@ -311,7 +311,7 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
         switch (MsgId)
         {
             case MS5611_SEND_HK_MID:
-            	ProcessCmdPipe();
+                ProcessCmdPipe();
                 ReportHousekeeping();
                 break;
 
@@ -647,10 +647,10 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
     /* Second order temperature compensation */
     if(*Temperature < 2000)
     {
-        T2    = (dT *dT) >> 31;
+        T2    = (dT * dT) >> 31;
         TEMP  = *Temperature - 2000;
         OFF2  = (5 *  TEMP * TEMP) >> 1;
-        SENS2 = OFF2 >> 1;
+        SENS2 = (5 *  TEMP * TEMP) >> 2;
 
         if(*Temperature < -1500)
         {
