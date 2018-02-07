@@ -10,7 +10,7 @@
 #include "ms5611_msg.h"
 #include "ms5611_version.h"
 #include <math.h>
-#include "lib/px4lib.h"
+#include "px4lib.h"
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
