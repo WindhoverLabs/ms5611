@@ -53,6 +53,45 @@ boolean MS5611_Custom_Uninit(void)
 
 boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal)
 {
+    /* Example values from MS5611 data sheet */
+    switch(Addr)
+    {
+        case 0:
+        {
+            *returnVal = 40127;
+            break;
+        }
+        case 1:
+        {
+            *returnVal = 36924;
+            break;
+        }
+        case 2:
+        {
+            *returnVal = 23317;
+            break;
+        }
+        case 3:
+        {
+            *returnVal = 23282;
+            break;
+        }
+        case 4:
+        {
+            *returnVal = 33464;
+            break;
+        }
+        case 5:
+        {
+            *returnVal = 28312;
+            break;
+        }
+        case 6:
+        {
+            *returnVal = 9;
+            break;
+        }
+    }
     return TRUE;
 }
 

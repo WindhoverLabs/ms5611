@@ -479,8 +479,8 @@ void Test_MS5611_UpdateParamsFromTable_Nominal(void)
 void Test_MS5611_CleanupCallback_Nominal(void)
 {
     MS5611 oMS5611;
-    
-    oMS5611.InitApp();
+
+    oMS5611.HkTlm.State == MS5611_INITIALIZED;
 
     MS5611_CleanupCallback();
 
