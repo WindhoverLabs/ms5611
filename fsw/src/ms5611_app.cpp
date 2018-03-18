@@ -728,7 +728,8 @@ void MS5611::ReadDevice(void)
         const double R  = 287.05;
     
         /* current pressure at MSL in kPa */
-        double p1 = 101325 / 1000.0;
+        //double p1 = 101325 / 1000.0;
+
         /* measured pressure in kPa */
         double p = static_cast<double>(pressure) / 1000.0;
     
@@ -741,7 +742,7 @@ void MS5611::ReadDevice(void)
          * h = -------------------------------  + h1
          *                   a
          */
-        SensorBaro.Altitude = (((pow((p / p1), (-(a * R) / g))) * T1) - T1) / a;
+        SensorBaro.Altitude = (((pow((p / m_Params.p1), (-(a * R) / g))) * T1) - T1) / a;
     
         /* Update diagnostic message */
         Diag.Altitude = SensorBaro.Altitude;
@@ -813,6 +814,14 @@ boolean MS5611::ValidateCRC(void)
             "MS5611 CRC check failed PROM = %u: CRC = %u",
             (unsigned int)promCRC, (unsigned int) returnedCRC);
     return FALSE;
+}
+
+void MS5611::UpdateParamsFromTable(void)
+{
+    if(0 != ConfigTblPtr)
+    {
+        m_Params.p1 = ConfigTblPtr->p1;
+    }
 }
 
 

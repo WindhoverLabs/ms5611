@@ -62,7 +62,7 @@ extern "C" {
 /** \brief Definition for a single config table entry */
 typedef struct
 {
-    float temp;
+    double p1;
 } MS5611_ConfigTbl_t;
 
 

@@ -81,6 +81,15 @@ typedef enum
 
 
 /**
+ * \brief application parameters
+ */
+typedef struct
+{
+    double p1;
+} MS5611_Params_t;
+
+
+/**
  **  \brief MS5611 Application Class
  */
 class MS5611
@@ -106,6 +115,9 @@ public:
 
     /** \brief Config Table Pointer */
     MS5611_ConfigTbl_t* ConfigTblPtr;
+    
+    /** \brief params from the config table */
+    MS5611_Params_t m_Params;
 
     /** \brief Output Data published at the end of cycle */
     PX4_SensorBaroMsg_t SensorBaro;
@@ -434,6 +446,16 @@ public:
     **
     *************************************************************************/
     static int32  ValidateConfigTbl(void*);
+    
+    /************************************************************************/
+    /** \brief Update parameters from the configuration table.
+     **
+     **  \par Description
+     **       This function updates the current parameters from the 
+     **       currently loaded configuration table.
+     **
+     *************************************************************************/
+    void UpdateParamsFromTable(void);
 };
 
 
