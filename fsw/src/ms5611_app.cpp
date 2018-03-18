@@ -181,6 +181,8 @@ void MS5611::InitData()
             MS5611_DIAG_TLM_MID, sizeof(MS5611_DiagPacket_t), TRUE);
     /* Init custom data */
     MS5611_Custom_InitData();
+    /* Update params from the configuration table */
+    UpdateParamsFromTable();
 }
 
 
@@ -213,13 +215,13 @@ int32 MS5611::InitApp()
         goto MS5611_InitApp_Exit_Tag;
     }
 
-    InitData();
-
     iStatus = InitConfigTbl();
     if (iStatus != CFE_SUCCESS)
     {
         goto MS5611_InitApp_Exit_Tag;
     }
+
+    InitData();
 
     returnBool = MS5611_Custom_Init();
     if (FALSE == returnBool)
