@@ -284,7 +284,7 @@ void Test_MS5611_InitApp_Fail_InitData(void)
 {
     MS5611 oMS5611;
 
-    int32 result = CFE_SUCCESS;
+    int32 result = 1;
     int32 expected = CFE_SUCCESS;
 
     /* Execute the function being tested */
