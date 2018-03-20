@@ -46,7 +46,6 @@ extern "C" {
  ** Includes
  *************************************************************************/
 #include "cfe.h"
-
 #include "ms5611_platform_cfg.h"
 #include "ms5611_mission_cfg.h"
 #include "ms5611_tbldefs.h"
@@ -59,10 +58,53 @@ extern "C" {
 /************************************************************************
  ** Local Defines
  *************************************************************************/
+
+/** \brief Minimum raw temperature measurement for error checking.
+**  
+**  \par Description:
+**       The minimum value of temperature for the MS5611 for temperature
+**       validation.
+**
+**  \par Limits:
+**       Must be defined as a minimum numeric value of the raw MS5611
+**       temperature measurement.
+*/
 #define MS5611_TEMP_MIN                     (-4000)
+
+/** \brief Maximum raw temperature measurement for error checking.
+**  
+**  \par Description:
+**       The maximum value of temperature for the MS5611 for temperature
+**       validation.
+**
+**  \par Limits:
+**       Must be defined as a maximum numeric value of the raw MS5611
+**       temperature measurement.
+*/
 #define MS5611_TEMP_MAX                     (8500)
 
+/** \brief Minimum raw pressure measurement for error checking.
+**  
+**  \par Description:
+**       The minimum value of pressure for the MS5611 for pressure
+**       validation.
+**
+**  \par Limits:
+**       Must be defined as a minimum numeric value of the raw MS5611
+**       pressure measurement.
+*/
 #define MS5611_PRESS_MIN                    (1000)
+
+/** \brief Maximum raw pressure measurement for error checking.
+**  
+**  \par Description:
+**       The maximum value of pressure for the MS5611 for pressure
+**       validation.
+**
+**  \par Limits:
+**       Must be defined as a maximum numeric value of the raw MS5611
+**       pressure measurement.
+*/
 #define MS5611_PRESS_MAX                    (120000)
 
 /************************************************************************
@@ -105,7 +147,6 @@ public:
     CFE_SB_PipeId_t CmdPipeId;
 
     /* Task-related */
-
     /** \brief Task Run Status */
     uint32 uiRunStatus;
 

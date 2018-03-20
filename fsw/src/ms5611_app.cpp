@@ -2,10 +2,8 @@
 ** Includes
 *************************************************************************/
 #include <string.h>
-
 #include "cfe.h"
 #include "ms5611_custom.h"
-
 #include "ms5611_app.h"
 #include "ms5611_msg.h"
 #include "ms5611_version.h"
@@ -59,16 +57,15 @@ int32 MS5611::InitEvent()
     /* Initialize the event filter table.
      * Note: 0 is the CFE_EVS_NO_FILTER mask and event 0 is reserved (not used) */
     memset(EventTbl, 0x00, sizeof(EventTbl));
-    
-    /* TODO: Choose the events you want to filter.  CFE_EVS_MAX_EVENT_FILTERS
-     * limits the number of filters per app.  An explicit CFE_EVS_NO_FILTER 
-     * (the default) has been provided as an example. */
+
+    /* CFE_EVS_MAX_EVENT_FILTERS limits the number of filters per app.  
+     * An explicit CFE_EVS_NO_FILTER (the default) has been provided as
+     * an example. */
     EventTbl[  ind].EventID = MS5611_RESERVED_EID;
     EventTbl[ind++].Mask    = CFE_EVS_NO_FILTER;
     EventTbl[  ind].EventID = MS5611_READ_ERR_EID;
     EventTbl[ind++].Mask    = CFE_EVS_FIRST_16_STOP;
-    
-    
+
     /* Add custom events to the filter table */
     customEventCount = MS5611_Custom_Init_EventFilters(ind, EventTbl);
     
@@ -242,7 +239,7 @@ int32 MS5611::InitApp()
             goto MS5611_InitApp_Exit_Tag; 
         }
     }
-    
+
     /* Validate the CRC code */
     returnBool = ValidateCRC();
     if (FALSE == returnBool)
@@ -252,7 +249,7 @@ int32 MS5611::InitApp()
         iStatus = -1;
         goto MS5611_InitApp_Exit_Tag;
     }
-    
+
     HkTlm.State = MS5611_INITIALIZED;
 
     /* Register the cleanup callback */
@@ -574,12 +571,17 @@ void MS5611::AppMain()
 
 boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
 {
-    uint32 D1 = 0;  //ADC value of the pressure conversion
-    /* TODO static */
-    static uint32 D2 = 0;  //ADC value of the temperature conversion
-    int32 dT = 0;   //difference between actual and measured temp.
-    int64 OFF = 0;  //offset at actual temperature
-    int64 SENS = 0; //sensitivity at actual temperature
+    /* ADC value of the pressure conversion */
+    uint32 D1 = 0;
+    /* ADC value of the temperature conversion
+     * static to keep temperature measurements between calls */
+    static uint32 D2 = 0;
+    /* difference between actual and measured temp */
+    int32 dT = 0;
+    /* offset at actual temperature */
+    int64 OFF = 0;
+    /* sensitivity at actual temperature */
+    int64 SENS = 0;
     int32 T2 = 0;
     int64 OFF2 = 0;
     int64 SENS2 = 0;
@@ -635,10 +637,12 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
         }
     }
     Diag.MeasureCount++;
+
     /* D2 - C5 * 2^8 */
     dT    = (int32)D2 - ((int32)MS5611_Coefficients[5] << 8);
+
     /* The following two equations must be solved with 64-bit integers (long long int)
-     * or overflow could occur. Note integer-suffix ll. */
+     * or overflow could occur. */
 
     /* C2 * 2^16 + (C4 * dT )/ 2^7 */
     OFF   = ((int64)MS5611_Coefficients[2] << 16) + (((int64)MS5611_Coefficients[4] * dT) >> 7);
@@ -712,9 +716,13 @@ void MS5611::ReadDevice(void)
         CFE_EVS_SendEvent(MS5611_READ_ERR_EID, CFE_EVS_ERROR,
                 "MS5611 read failure, altitude not updated");
         /* TODO handle error condition */
+        goto end_of_function;
     }
     else
     {
+        /* Stamp time */
+        SensorBaro.Timestamp = PX4LIB_GetPX4TimeUs();
+        /* Convert to Celsius */
         SensorBaro.Temperature = temperature / 100.0f;
         /* convert to millibar */
         SensorBaro.Pressure = pressure / 100.0f;
@@ -728,13 +736,13 @@ void MS5611::ReadDevice(void)
         const double g  = 9.80665;
         /* ideal gas constant in J/kg/K */
         const double R  = 287.05;
-    
-        /* current pressure at MSL in kPa */
-        //double p1 = 101325 / 1000.0;
-
         /* measured pressure in kPa */
         double p = static_cast<double>(pressure) / 1000.0;
-    
+
+        /* current pressure at MSL in kPa 
+         * double p1 = 101325 / 1000.0 
+         */
+
         /*
          * Solve:
          *
@@ -750,12 +758,14 @@ void MS5611::ReadDevice(void)
         Diag.Pressure = SensorBaro.Pressure;
         Diag.Temperature = SensorBaro.Temperature;
         Diag.Altitude = SensorBaro.Altitude;
-
-        SensorBaro.Timestamp = PX4LIB_GetPX4TimeUs();
-
+        
+        /* Send the SensorBaro message */
         CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&SensorBaro);
         CFE_SB_SendMsg((CFE_SB_Msg_t*)&SensorBaro);
     }
+
+end_of_function:
+;
 }
 
 
@@ -768,7 +778,6 @@ uint8 MS5611::CRC4(uint16 n_prom[])
     uint16 crc_read; 
     uint8 n_bit;
     n_rem = 0x00;
-
     /* save the original CRC */
     crc_read = n_prom[7];
     /* replace the crc byte with 0 */
@@ -819,6 +828,7 @@ boolean MS5611::ValidateCRC(void)
             (unsigned int)promCRC, (unsigned int) returnedCRC);
     return FALSE;
 }
+
 
 void MS5611::UpdateParamsFromTable(void)
 {

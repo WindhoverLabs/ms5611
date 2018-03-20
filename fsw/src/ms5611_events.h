@@ -42,7 +42,6 @@ extern "C" {
 ** Local Defines
 *************************************************************************/
 
-
 /* Event IDs
  * Conventions: _EID is the event identifier.  _EVT_CNT is the total number of
  * events and should always be last.  Events can be added before _EVT_CNT.
@@ -51,7 +50,7 @@ extern "C" {
 typedef enum {
 
 /** \brief <tt> Value of zero is reserved, and should not be used. </tt> */
-	MS5611_RESERVED_EID = 0,  /* Do not use this event ID */
+    MS5611_RESERVED_EID = 0,  /* Do not use this event ID */
 
 /** \brief <tt> 'Initialized. Version \%d.\%d.\%d.\%d' </tt>
 **  \event <tt> 'Initialized. Version \%d.\%d.\%d.\%d' </tt>
@@ -72,7 +71,7 @@ typedef enum {
 **  The fourth \c %d field contains the application revision number defined
 **      in #MS5611_MISSION_REV.
 */
-	MS5611_INIT_INF_EID,
+    MS5611_INIT_INF_EID,
 
 /** \brief <tt> 'Recvd NOOP. Version \%d.\%d.\%d.\%d' </tt>
 **  \event <tt> 'Recvd NOOP. Version \%d.\%d.\%d.\%d' </tt>
@@ -95,7 +94,7 @@ typedef enum {
 **  The fourth \c %d field contains the application revision number defined
 **      in #MS5611_MISSION_REV.
 */
-	MS5611_CMD_NOOP_EID,
+    MS5611_CMD_NOOP_EID,
 
     /** \brief <tt> '\%s Pipe failed to subscribe to \%s. (0x\%08X)' </tt>
     **  \event <tt> '\%s Pipe failed to subscribe to \%s. (0x\%08X)' </tt>
@@ -112,7 +111,7 @@ typedef enum {
 **  The 32 bit hexadecimal number is the error code returned by CFE.
 **
 */
-	MS5611_SUBSCRIBE_ERR_EID,
+    MS5611_SUBSCRIBE_ERR_EID,
 
 /** \brief <tt> 'Failed to create \%s pipe (0x\%08X)' </tt>
 **  \event <tt> 'Failed to create \%s pipe (0x\%08X' </tt>
@@ -128,7 +127,7 @@ typedef enum {
 **  The 32 bit hexadecimal number is the error code returned by CFE.
 **
 */
-	MS5611_PIPE_INIT_ERR_EID,
+    MS5611_PIPE_INIT_ERR_EID,
 
 /** \brief <tt> 'Failed to manage Config table (0x\%08X)' </tt>
 **  \event <tt> 'Failed to manage Config table (0x\%08X)' </tt>
@@ -141,7 +140,7 @@ typedef enum {
 **  #CFE_TBL_Manage function.
 **
 */
-	MS5611_CFGTBL_MANAGE_ERR_EID,
+    MS5611_CFGTBL_MANAGE_ERR_EID,
     
 /** \brief <tt> 'Failed to register config table (0x%08X)' </tt>
 **  \event <tt> 'Failed to register config table (0x%08X)' </tt>
@@ -157,7 +156,7 @@ typedef enum {
 **  #CFE_TBL_Register function.
 **
 */
-	MS5611_CFGTBL_REG_ERR_EID,
+    MS5611_CFGTBL_REG_ERR_EID,
     
 /** \brief <tt> 'Failed to get Config table's address (0x\%08X)' </tt>
 **  \event <tt> 'Failed to get Config table's address (0x\%08X)' </tt>
@@ -170,7 +169,7 @@ typedef enum {
 **  #CFE_TBL_GetAddress function.
 **
 */
-	MS5611_CFGTBL_GETADDR_ERR_EID,
+    MS5611_CFGTBL_GETADDR_ERR_EID,
 
 /** \brief <tt> '\%s pipe read error (0x\%08X).' </tt>
 **  \event <tt> '\%s pipe read error (0x\%08X).' </tt>
@@ -186,7 +185,7 @@ typedef enum {
 **  The 32 bit hexadecimal number is the error code returned by CFE.
 **
 */
-	MS5611_RCVMSG_ERR_EID,
+    MS5611_RCVMSG_ERR_EID,
 
 /** \brief <tt> 'Recvd invalid \%s msgId (0x\%04X)' </tt>
 **  \event <tt> 'Recvd invalid \%s msgId (0x\%04X)' </tt>
@@ -201,7 +200,7 @@ typedef enum {
 **  The \c %s field contains the name of the pipe.
 **  The 16 bit hexadecimal number is the actual message ID received.
 */
-	MS5611_MSGID_ERR_EID,
+    MS5611_MSGID_ERR_EID,
 
 /** \brief <tt> 'Recvd invalid command code (\%u)' </tt>
 **  \event <tt> 'Recvd invalid command code (\%u)' </tt>
@@ -215,7 +214,7 @@ typedef enum {
 **
 **  The %u field contains the actual command code received.
 */
-	MS5611_CC_ERR_EID,
+    MS5611_CC_ERR_EID,
 
 /** \brief <tt> 'Rcvd invalid msgLen: msgId=0x\%08X, cmdCode=\%d, msgLen=\%d, expectedLen=\%d" </tt>
 **  \event <tt> 'Rcvd invalid msgLen: msgId=0x\%08X, cmdCode=\%d, msgLen=\%d, expectedLen=\%d" </tt>
@@ -232,7 +231,7 @@ typedef enum {
 **  The third \c %d field contains the actual length.
 **  The fourth \c %d field contains the expected length.
 */
-	MS5611_MSGLEN_ERR_EID,
+    MS5611_MSGLEN_ERR_EID,
 
 /** \brief <tt> 'Failed to register config table (0x%08X)' </tt>
 **  \event <tt> 'Failed to register config table (0x%08X)' </tt>
@@ -248,7 +247,7 @@ typedef enum {
 **  #CFE_TBL_Register function.
 **
 */
-	MPU9250_CFGTBL_REG_ERR_EID,
+    MPU9250_CFGTBL_REG_ERR_EID,
 
 /** \brief <tt> 'MS5611 - $commandError' </tt>
 **  \event <tt> 'MS5611 - $commandError' </tt>
@@ -262,6 +261,7 @@ typedef enum {
 **
 */
     MS5611_CMD_ERR_EID,
+
 /** \brief <tt> 'MS5611 - ' </tt>
 **  \event <tt> 'MS5611 - ' </tt>
 **  
@@ -312,13 +312,13 @@ typedef enum {
 **  \par Cause:
 **
 **  This event message is issued when the MS5611 has
-**  had an error in initialization.
+**  had a read error.
 **
 */
     MS5611_READ_ERR_EID,
 
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
-	MS5611_EVT_CNT
+    MS5611_EVT_CNT
 } MS5611_EventIds_t;
 
 
