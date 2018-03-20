@@ -692,8 +692,8 @@ boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
         goto end_of_function;
     }
     /* Update diagnostic message */
-    Diag.Pressure = *Pressure;
-    Diag.Temperature = *Temperature;
+    Diag.RawPressure = *Pressure;
+    Diag.RawTemperature = *Temperature;
 
 end_of_function:
     return returnBool;
@@ -747,6 +747,8 @@ void MS5611::ReadDevice(void)
         SensorBaro.Altitude = (((pow((p / m_Params.p1), (-(a * R) / g))) * T1) - T1) / a;
     
         /* Update diagnostic message */
+        Diag.Pressure = SensorBaro.Pressure;
+        Diag.Temperature = SensorBaro.Temperature;
         Diag.Altitude = SensorBaro.Altitude;
 
         SensorBaro.Timestamp = PX4LIB_GetPX4TimeUs();
