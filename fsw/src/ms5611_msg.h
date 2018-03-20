@@ -186,7 +186,6 @@ typedef struct
     uint8              usCmdErrCnt; 
     /** \brief App State */
     uint8                 State;
-
 } MS5611_HkTlm_t;
 
 
