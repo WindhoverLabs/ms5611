@@ -475,16 +475,11 @@ void Test_MS5611_UpdateParamsFromTable_Nominal(void)
 
 /**
  * Test MS5611_CleanupCallback(), Nominal
+ * No way to fail cleanupcallback()
  */
 void Test_MS5611_CleanupCallback_Nominal(void)
 {
-    MS5611 oMS5611;
-
-    oMS5611.HkTlm.State == MS5611_INITIALIZED;
-
     MS5611_CleanupCallback();
-
-    UtAssert_True(oMS5611.HkTlm.State == MS5611_UNINITIALIZED, "State != MS5611_UNINITIALIZED");
 }
 
 
