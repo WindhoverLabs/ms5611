@@ -33,6 +33,11 @@
 
 #ifndef MS5611_CUSTOM_H
 #define MS5611_CUSTOM_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /************************************************************************
 ** Pragmas
 *************************************************************************/
@@ -40,10 +45,6 @@
 /************************************************************************
 ** Includes
 *************************************************************************/
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /************************************************************************
 ** Local Defines
@@ -122,14 +123,74 @@ boolean MS5611_Custom_Uninit(void);
 *************************************************************************/
 int32 MS5611_Custom_Init_EventFilters(int32 ind, CFE_EVS_BinFilter_t *EventTbl);
 
+/************************************************************************/
+/** \brief Read the MS5611 Read-Only Memory.
+**
+**  \par Description
+**       This function reads the MS5611 factory calibration coefficient
+**       data from PROM.
+**
+**  \par Assumptions, External Events, and Notes:
+**       This function must be called after initialization and before
+**       reading sensor data to get the specific factory calibration.
+**
+**  \param [in]   Addr    Which PROM register to read (0-7).
+**
+**  \param [out]   returnVal The PROM contents.
+**
+**  \returns    TRUE for success, FALSE for failure.
+**
+*************************************************************************/
 boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
 
+/************************************************************************/
+/** \brief Start D1 Raw Pressure Conversion.
+**
+**  \par Description
+**       This starts the raw pressure conversion internal to the MS5611.
+**
+**  \par Assumptions, External Events, and Notes:
+**       This function must be called after initialization.
+**
+**  \returns    TRUE for success, FALSE for failure.
+**
+*************************************************************************/
 boolean MS5611_D1Conversion(void);
+
+/************************************************************************/
+/** \brief Start D1 Raw Temperature Conversion.
+**
+**  \par Description
+**       This starts the raw temperature conversion internal to the 
+**       MS5611.
+**
+**  \par Assumptions, External Events, and Notes:
+**       This function must be called after initialization.
+**
+**  \returns    TRUE for success, FALSE for failure.
+**
+*************************************************************************/
 boolean MS5611_D2Conversion(void);
+
+/************************************************************************/
+/** \brief Reads the result of a D1, or D2 conversion.
+**
+**  \par Description
+**       This reads the result of a raw pressure or temperature 
+**       conversion from the MS5611.
+**
+**  \par Assumptions, External Events, and Notes:
+**       This function must be called after initialization.
+**
+**  \param [out]   returnVal The ADC result.
+**
+**  \returns    TRUE for success, FALSE for failure.
+**
+*************************************************************************/
 boolean MS5611_ReadADCResult(uint32 *returnVal);
 
 #ifdef __cplusplus
 }
 #endif 
 
-#endif /* RGBLED_CUSTOM_H */
+#endif /* MS5611_CUSTOM_H */
