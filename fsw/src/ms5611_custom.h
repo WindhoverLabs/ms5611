@@ -72,6 +72,7 @@ extern "C" {
 *************************************************************************/
 void MS5611_Custom_InitData(void);
 
+
 /************************************************************************/
 /** \brief Custom function to initialize custom device(s).
 **
@@ -105,6 +106,7 @@ boolean MS5611_Custom_Init(void);
 *************************************************************************/
 boolean MS5611_Custom_Uninit(void);
 
+
 /************************************************************************/
 /** \brief Custom function to initialize custom events. 
 **
@@ -122,6 +124,7 @@ boolean MS5611_Custom_Uninit(void);
 **
 *************************************************************************/
 int32 MS5611_Custom_Init_EventFilters(int32 ind, CFE_EVS_BinFilter_t *EventTbl);
+
 
 /************************************************************************/
 /** \brief Read the MS5611 Read-Only Memory.
@@ -143,6 +146,7 @@ int32 MS5611_Custom_Init_EventFilters(int32 ind, CFE_EVS_BinFilter_t *EventTbl);
 *************************************************************************/
 boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
 
+
 /************************************************************************/
 /** \brief Start D1 Raw Pressure Conversion.
 **
@@ -156,6 +160,7 @@ boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
 **
 *************************************************************************/
 boolean MS5611_D1Conversion(void);
+
 
 /************************************************************************/
 /** \brief Start D1 Raw Temperature Conversion.
@@ -171,6 +176,7 @@ boolean MS5611_D1Conversion(void);
 **
 *************************************************************************/
 boolean MS5611_D2Conversion(void);
+
 
 /************************************************************************/
 /** \brief Reads the result of a D1, or D2 conversion.
@@ -188,6 +194,7 @@ boolean MS5611_D2Conversion(void);
 **
 *************************************************************************/
 boolean MS5611_ReadADCResult(uint32 *returnVal);
+
 
 #ifdef __cplusplus
 }

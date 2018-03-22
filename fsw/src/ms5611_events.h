@@ -319,6 +319,7 @@ typedef enum {
 
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
     MS5611_EVT_CNT
+
 } MS5611_EventIds_t;
 
 

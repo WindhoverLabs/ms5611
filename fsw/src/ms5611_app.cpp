@@ -605,7 +605,11 @@ void MS5611::AppMain()
     CFE_ES_ExitApp(uiRunStatus);
 }
 
-
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Get a raw pressure and temperature measurement from the device  */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 boolean MS5611::GetMeasurement(int32 *Pressure, int32 *Temperature)
 {
     /* ADC value of the pressure conversion */
@@ -740,7 +744,11 @@ end_of_function:
     return returnBool;
 }
 
-
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Read from the device and convert to altitude                    */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void MS5611::ReadDevice(void)
 {
     int32 pressure = 0;
@@ -805,7 +813,11 @@ end_of_function:
 ;
 }
 
-
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Calculate a CRC4 code                                           */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 uint8 MS5611::CRC4(uint16 n_prom[])
 {
     int cnt; 
@@ -844,7 +856,11 @@ uint8 MS5611::CRC4(uint16 n_prom[])
     return (n_rem ^ 0x00);
 }
 
-
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Validate the CRC code in PROM                                   */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 boolean MS5611::ValidateCRC(void)
 {
     unsigned char returnedCRC = 0;
@@ -867,6 +883,11 @@ boolean MS5611::ValidateCRC(void)
 }
 
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Update params from the config table                             */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void MS5611::UpdateParamsFromTable(void)
 {
     if(0 != ConfigTblPtr)
@@ -875,7 +896,11 @@ void MS5611::UpdateParamsFromTable(void)
     }
 }
 
-
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Cleanup before exit                                             */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void MS5611_CleanupCallback(void)
 {
     oMS5611.HkTlm.State = MS5611_UNINITIALIZED;

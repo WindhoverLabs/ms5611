@@ -98,7 +98,7 @@ MS5611_InitConfigTbl_Exit_Tag:
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Validate MS5611 Configuration Table                                */
+/* Validate MS5611 Configuration Table                             */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 int32 MS5611::ValidateConfigTbl(void* ConfigTblPtr)
