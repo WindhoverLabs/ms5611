@@ -835,8 +835,14 @@ uint8 MS5611::CRC4(uint16 n_prom[])
     for (cnt = 0; cnt < 16; cnt++) 
     {
         /* choose LSB or MSB */
-        if (cnt%2==1) n_rem ^= (uint16) ((n_prom[cnt>>1]) & 0x00FF);
-        else n_rem ^= (uint16) (n_prom[cnt>>1]>>8);
+        if (cnt%2==1) 
+        {
+            n_rem ^= (uint16) ((n_prom[cnt>>1]) & 0x00FF);
+        }
+        else 
+        {
+            n_rem ^= (uint16) (n_prom[cnt>>1]>>8);
+        }
         for (n_bit = 8; n_bit > 0; n_bit--)
         {
             if (n_rem & (0x8000))
@@ -853,7 +859,7 @@ uint8 MS5611::CRC4(uint16 n_prom[])
     n_rem = (0x000F & (n_rem >> 12));
     /* Restore the crc_read to its original value */
     n_prom[7] = crc_read;
-    return (n_rem ^ 0x00);
+    return n_rem ^ 0x00;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
