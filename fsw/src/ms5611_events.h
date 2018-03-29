@@ -317,6 +317,19 @@ typedef enum {
 */
     MS5611_READ_ERR_EID,
 
+/** \brief <tt> 'Config params table validation error' </tt>
+**  \event <tt> 'Config params table validation error' </tt>
+**
+**  \par Type: ERROR
+**
+**  \par Cause:
+**
+**  This event message is issued when the configuration table validation
+**  fails.
+**
+*/
+    MS5611_CFGTBL_VALIDATION_ERR_EID,
+
 /** \brief <tt> This is a count of all the app events and should not be used. </tt> */
     MS5611_EVT_CNT
 

@@ -127,6 +127,7 @@ typedef enum
  */
 typedef struct
 {
+    /*! MSL Pressure */
     double p1;
 } MS5611_Params_t;
 
