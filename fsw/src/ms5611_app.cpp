@@ -194,7 +194,7 @@ int32 MS5611::InitPipe()
     }
 
 MS5611_InitPipe_Exit_Tag:
-    return iStatus;
+    return (iStatus);
 }
     
 
@@ -352,17 +352,21 @@ int32 MS5611::RcvSchPipeMsg(int32 iBlocking)
         switch (MsgId)
         {
             case MS5611_SEND_HK_MID:
+            {
                 ProcessCmdPipe();
                 ReportHousekeeping();
                 break;
-
+            }
             case MS5611_MEASURE_MID:
+            {
                 ReadDevice();
                 break;
-
+            }
             default:
+            {
                 (void) CFE_EVS_SendEvent(MS5611_MSGID_ERR_EID, CFE_EVS_ERROR,
                         "Recvd invalid SCH msgId (0x%04X)", MsgId);
+            }
         }
     }
     else if (iStatus == CFE_SB_NO_MESSAGE)
@@ -435,6 +439,7 @@ void MS5611::ProcessCmdPipe()
             break;
         }
     }
+    return;
 }
 
 
@@ -457,6 +462,7 @@ void MS5611::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
             switch (uiCmdCode)
             {
                 case MS5611_NOOP_CC:
+                {
                     HkTlm.usCmdCnt++;
                     (void) CFE_EVS_SendEvent(MS5611_CMD_NOOP_EID, CFE_EVS_INFORMATION,
                         "Recvd NOOP. Version %d.%d.%d.%d",
@@ -465,25 +471,30 @@ void MS5611::ProcessAppCmds(CFE_SB_Msg_t* MsgPtr)
                         MS5611_REVISION,
                         MS5611_MISSION_REV);
                     break;
-    
+                }
                 case MS5611_RESET_CC:
+                {
                     HkTlm.usCmdCnt = 0;
                     HkTlm.usCmdErrCnt = 0;
                     break;
-
+                }
                 case MS5611_SEND_DIAG_TLM_CC:
+                {
                     HkTlm.usCmdCnt++;
                     ReportDiagnostic();
                     break;
-    
+                }
                 default:
+                {
                     HkTlm.usCmdErrCnt++;
                     (void) CFE_EVS_SendEvent(MS5611_CC_ERR_EID, CFE_EVS_ERROR,
                                       "Recvd invalid command code (%u)", (unsigned int)uiCmdCode);
                     break;
+                }
             }
         }
     }
+    return;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -495,6 +506,7 @@ void MS5611::ReportHousekeeping()
 {
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&HkTlm);
     CFE_SB_SendMsg((CFE_SB_Msg_t*)&HkTlm);
+    return;
 }
 
 
@@ -507,6 +519,7 @@ void MS5611::ReportDiagnostic()
 {
     CFE_SB_TimeStampMsg((CFE_SB_Msg_t*)&Diag);
     CFE_SB_SendMsg((CFE_SB_Msg_t*)&Diag);
+    return;
 }
 
 
@@ -840,7 +853,7 @@ uint8 MS5611::CRC4(uint16 n_prom[])
     for (cnt = 0; cnt < 16; cnt++) 
     {
         /* choose LSB or MSB */
-        if (cnt%2==1) 
+        if (cnt%2 == 1) 
         {
             n_rem ^= (uint16) ((n_prom[cnt>>1]) & 0x00FF);
         }
@@ -852,7 +865,7 @@ uint8 MS5611::CRC4(uint16 n_prom[])
         {
             if (n_rem & (0x8000))
             {
-            n_rem = (n_rem << 1) ^ 0x3000;
+                n_rem = (n_rem << 1) ^ 0x3000;
             }
             else
             {
@@ -911,6 +924,7 @@ void MS5611::UpdateParamsFromTable(void)
         /* MSL Pressure */
         m_Params.p1 = ConfigTblPtr->p1;
     }
+    return;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -926,6 +940,7 @@ void MS5611_CleanupCallback(void)
         CFE_EVS_SendEvent(MS5611_UNINIT_ERR_EID, CFE_EVS_ERROR,"MS5611_Uninit failed");
         oMS5611.HkTlm.State = MS5611_INITIALIZED;
     }
+    return;
 }
 
 

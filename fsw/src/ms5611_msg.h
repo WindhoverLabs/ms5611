@@ -51,7 +51,7 @@ extern "C" {
 ** Local Defines
 *************************************************************************/
 /** \brief The number of MS5611 coefficients in PROM */
-#define MS5611_COEF_SIZE    (8)
+#define MS5611_COEF_SIZE               (8)
 
 /************************************************************************
 ** MS5611 Command Codes
