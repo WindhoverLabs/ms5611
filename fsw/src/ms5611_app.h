@@ -472,6 +472,19 @@ private:
 
 public:
     /************************************************************************/
+    /** \brief Cleanup prior to exit
+    **
+    **  \par Description
+    **       This function handles any necessary cleanup prior
+    **       to application exit.
+    **
+    **  \par Assumptions, External Events, and Notes:
+    **       None
+    **
+    *************************************************************************/
+    void CleanupExit(void);
+
+    /************************************************************************/
     /** \brief Validate configuration table
     **
     **  \par Description

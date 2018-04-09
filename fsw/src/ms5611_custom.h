@@ -196,6 +196,22 @@ boolean MS5611_D2Conversion(void);
 boolean MS5611_ReadADCResult(uint32 *returnVal);
 
 
+/************************************************************************/
+/** \brief Custom function to perform any critical cleanup after a 
+**         failure.
+**
+**  \par Description
+**       This function is called in cleanup to close and uninitialize
+**       device resources.
+**
+**  \par Assumptions, External Events, and Notes:
+**       This function must be defined, but not all custom
+**       layers will do anything in this function.
+**
+*************************************************************************/
+void MS5611_Critical_Cleanup(void);
+
+
 #ifdef __cplusplus
 }
 #endif 

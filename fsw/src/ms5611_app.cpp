@@ -616,6 +616,9 @@ void MS5611::AppMain()
         }
     }
 
+    /* Pre-normal exit cleanup */
+    CleanupExit();
+
     /* Stop Performance Log entry */
     CFE_ES_PerfLogExit(MS5611_MAIN_TASK_PERF_ID);
 
@@ -927,6 +930,23 @@ void MS5611::UpdateParamsFromTable(void)
     return;
 }
 
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*                                                                 */
+/* Normal application exit                                         */
+/*                                                                 */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void MS5611::CleanupExit(void)
+{
+    HkTlm.State = MS5611_UNINITIALIZED;
+    if(MS5611_Custom_Uninit() != TRUE)
+    {
+        CFE_EVS_SendEvent(MS5611_UNINIT_ERR_EID, CFE_EVS_ERROR,"MS5611_Uninit failed");
+        HkTlm.State = MS5611_INITIALIZED;
+    }
+    return;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* Cleanup before exit                                             */
@@ -934,12 +954,7 @@ void MS5611::UpdateParamsFromTable(void)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void MS5611_CleanupCallback(void)
 {
-    oMS5611.HkTlm.State = MS5611_UNINITIALIZED;
-    if(MS5611_Custom_Uninit() != TRUE)
-    {
-        CFE_EVS_SendEvent(MS5611_UNINIT_ERR_EID, CFE_EVS_ERROR,"MS5611_Uninit failed");
-        oMS5611.HkTlm.State = MS5611_INITIALIZED;
-    }
+    MS5611_Critical_Cleanup();
     return;
 }
 
