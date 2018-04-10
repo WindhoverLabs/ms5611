@@ -15,7 +15,7 @@
 /*
 ** Local Structure Declarations
 */
-static CFE_TBL_FileDef_t CFE_TBL_FileDef =
+static OS_USED CFE_TBL_FileDef_t CFE_TBL_FileDef =
 {
     /* Content format: ObjName[64], TblName[38], Desc[32], TgtFileName[20], ObjSize
     **    ObjName - variable name of config table, e.g., CI_ConfigDefTbl[]
@@ -42,7 +42,8 @@ static CFE_TBL_FileDef_t CFE_TBL_FileDef =
 /* Default MPU9250 config table data */
 MS5611_ConfigTbl_t MS5611_ConfigTbl =
 {
-	/* TODO:  Define table. */
+    /* current pressure at MSL in kPa */
+    101.325
 };
 
 /*
