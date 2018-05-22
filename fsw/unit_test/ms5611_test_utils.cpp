@@ -53,7 +53,8 @@
  */
 MS5611_ConfigTbl_t ConfigTbl = {
         /* TODO:  Define table */
-		0
+    /* current pressure at MSL in kPa */
+    101.325
 };
 
 /*

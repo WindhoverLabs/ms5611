@@ -284,14 +284,8 @@ void Test_MS5611_InitApp_Fail_InitData(void)
 {
     MS5611 oMS5611;
 
-    int32 result = 1;
-    int32 expected = CFE_SUCCESS;
-
     /* Execute the function being tested */
-    result = oMS5611.InitApp();
-
-    /* Verify results */
-    UtAssert_True (result == expected, "InitApp, fail init data");
+    oMS5611.InitData();
 }
 
 
@@ -322,7 +316,7 @@ void Test_MS5611_InitApp_Nominal(void)
 {
     MS5611 oMS5611;
 
-    /* Set a fail result for SB */
+    /* Set a failed result. */
     int32 result = (CFE_SEVERITY_BITMASK & CFE_SEVERITY_ERROR)
                    | CFE_EXECUTIVE_SERVICE | CFE_ES_ERR_APP_REGISTER;
     int32 expected = CFE_SUCCESS;
