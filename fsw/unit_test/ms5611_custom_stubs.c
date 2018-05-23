@@ -97,6 +97,11 @@ boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal)
             *returnVal = 9;
             break;
         }
+        case 7:
+        {
+            *returnVal = 2053;
+            break;
+        }
     }
     return TRUE;
 }
