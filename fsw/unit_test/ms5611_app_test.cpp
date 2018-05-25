@@ -225,6 +225,8 @@ void Test_MS5611_InitData(void)
     /* Set a fail result */
     int32 expected = CFE_SUCCESS;
 
+    (void) oMS5611.InitApp();
+
     /* Execute the function being tested */
     oMS5611.InitData();
 
@@ -283,6 +285,8 @@ void Test_MS5611_InitApp_Fail_InitPipe(void)
 void Test_MS5611_InitApp_Fail_InitData(void)
 {
     MS5611 oMS5611;
+
+    (void) oMS5611.InitApp();
 
     /* Execute the function being tested */
     oMS5611.InitData();
