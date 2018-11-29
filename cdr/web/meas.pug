@@ -1,0 +1,31 @@
+.row.os-theme-dark
+  article.col-xs-12.col-sm-12
+    header
+      span.widget-icon
+        i.fa.fa-table
+      h2 MS5611 - Measurement
+    div.widget-body.table-responsive
+      table.table.table-condensed
+        tbody
+          tr
+            th Raw Pressure
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/RawPressure'}],indicator:'text'}) ---
+          tr
+            th Raw Temperature
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/RawTemperature' }],indicator:'text'}) ---
+          tr
+            th Pressure
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Pressure', format:'%.5f mbar' }],indicator:'text'}) ---
+          tr
+            th Temperature
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Temperature', format:'%d °C' }],indicator:'text'}) ---
+          tr
+            th Altitude
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Altitude', format:'%.5f m' }],indicator:'text'}) ---
+    footer.btn-group(role="group")      
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/MS5611/SendDiag'},indicator:'cmd'}) Diag    

@@ -12,8 +12,8 @@
 #    notice, this list of conditions and the following disclaimer in
 #    the documentation and/or other materials provided with the
 #    distribution.
-# 3. Neither the name Windhover Labs nor the names of its 
-#    contributors may be used to endorse or promote products derived 
+# 3. Neither the name Windhover Labs nor the names of its
+#    contributors may be used to endorse or promote products derived
 #    from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -41,12 +41,17 @@ add_airliner_app_def(ms5611
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_msg.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_version.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_custom.h
-   
+
     INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 
     USER_DOCS   ${CMAKE_CURRENT_SOURCE_DIR}/user_doxy.in
     DESIGN_DOCS ${CMAKE_CURRENT_SOURCE_DIR}/detail_doxy.in
+
+    MSG_OVERRIDES ${CMAKE_CURRENT_SOURCE_DIR}/ms5611_msg_overrides.json
+
+    COMMANDER_PLUGIN
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../cdr
 )
 
 add_airliner_app_unit_test(ms5611-ut
@@ -69,11 +74,11 @@ add_airliner_app_unit_test(ms5611-ut
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_events.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_msg.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_version.h
-        
+
     INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/
-        
+
     VALGRIND_SUPPRESSION_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/valgrind.supp
 )
