@@ -11,7 +11,7 @@ module.exports = class CfeCdrPlugin extends CdrPlugin {
 
   getContent() {
     var result = {
-      shortDescription: 'MS5611',
+      shortDescription: 'MS5611 Barometric Altimeter',
       longDescription: 'MS5611 Barometric Altimeter Driver.',
       nodes: {
         main: {
