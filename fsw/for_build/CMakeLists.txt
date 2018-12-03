@@ -39,6 +39,7 @@ add_airliner_app_def(ms5611
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_events.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_tbldefs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_msg.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_symbols.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_version.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_custom.h
 
