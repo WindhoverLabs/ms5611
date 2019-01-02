@@ -1,0 +1,43 @@
+.row.os-theme-dark
+  article.col-xs-12.col-sm-12
+    header
+      span.widget-icon
+        i.fa.fa-table
+      h2 MS5611 - Measurement
+    div.widget-body.table-responsive
+      table.table.table-condensed
+        tbody
+          tr
+            th Coefficients[0]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[0]'}],indicator:'text'}) ---
+          tr
+            th Coefficients[1]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[1]'}],indicator:'text'}) ---
+          tr
+            th Coefficients[2]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[2]'}],indicator:'text'}) ---
+          tr
+            th Coefficients[3]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[3]'}],indicator:'text'}) ---
+          tr
+            th Coefficients[4]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[4]'}],indicator:'text'}) ---
+          tr
+            th Coefficients[5]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[5]'}],indicator:'text'}) ---
+          tr
+            th Coefficients[6]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[6]'}],indicator:'text'}) ---
+          tr
+            th Coefficients[7]
+            td
+              div(data-cdr={tlm:[{name:'/MS5611/MS5611_DiagPacket_t/Coefficients[7]'}],indicator:'text'}) ---
+    footer.btn-group(role="group")      
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/MS5611/SendDiag'},indicator:'cmd'}) Diag    
