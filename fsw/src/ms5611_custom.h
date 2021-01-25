@@ -86,7 +86,7 @@ void MS5611_Custom_InitData(void);
 **  \endreturns
 **
 *************************************************************************/
-boolean MS5611_Custom_Init(void);
+osalbool MS5611_Custom_Init(void);
 
 
 /************************************************************************/
@@ -104,7 +104,7 @@ boolean MS5611_Custom_Init(void);
 **  \endreturns
 **
 *************************************************************************/
-boolean MS5611_Custom_Uninit(void);
+osalbool MS5611_Custom_Uninit(void);
 
 
 /************************************************************************/
@@ -139,12 +139,12 @@ int32 MS5611_Custom_Init_EventFilters(int32 ind, CFE_EVS_BinFilter_t *EventTbl);
 **
 **  \param [in]   Addr    Which PROM register to read (0-7).
 **
-**  \param [out]   returnVal The PROM contents.
+**  \param [in/out]   returnVal The PROM contents.
 **
 **  \returns    TRUE for success, FALSE for failure.
 **
 *************************************************************************/
-boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
+osalbool MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
 
 
 /************************************************************************/
@@ -159,7 +159,7 @@ boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal);
 **  \returns    TRUE for success, FALSE for failure.
 **
 *************************************************************************/
-boolean MS5611_D1Conversion(void);
+osalbool MS5611_D1Conversion(void);
 
 
 /************************************************************************/
@@ -175,7 +175,7 @@ boolean MS5611_D1Conversion(void);
 **  \returns    TRUE for success, FALSE for failure.
 **
 *************************************************************************/
-boolean MS5611_D2Conversion(void);
+osalbool MS5611_D2Conversion(void);
 
 
 /************************************************************************/
@@ -188,12 +188,12 @@ boolean MS5611_D2Conversion(void);
 **  \par Assumptions, External Events, and Notes:
 **       This function must be called after initialization.
 **
-**  \param [out]   returnVal The ADC result.
+**  \param [in/out]   returnVal The ADC result.
 **
 **  \returns    TRUE for success, FALSE for failure.
 **
 *************************************************************************/
-boolean MS5611_ReadADCResult(uint32 *returnVal);
+osalbool MS5611_ReadADCResult(uint32 *returnVal);
 
 
 /************************************************************************/

@@ -36,10 +36,6 @@ extern "C" {
 #endif
 
 /************************************************************************
-** Pragmas
-*************************************************************************/
-
-/************************************************************************
 ** Includes
 *************************************************************************/
 #include "ms5611_app.h"
@@ -48,7 +44,6 @@ extern "C" {
 /************************************************************************
 ** Function Definitions
 *************************************************************************/
-
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -104,19 +99,10 @@ MS5611_InitConfigTbl_Exit_Tag:
 int32 MS5611::ValidateConfigTbl(void* ConfigTblPtr)
 {
     int32  iStatus = 0;
-    boolean valid_bool = TRUE;
+    osalbool valid_bool = TRUE;
     MS5611_ConfigTbl_t* MS5611_ConfigTblPtr = (MS5611_ConfigTbl_t*)(ConfigTblPtr);
 
-    /* The lowest non-tornadic atmospheric pressure ever measured was 87 kPa, 
-     * set on 12 October 1979, during Typhoon Tip in the western Pacific Ocean.
-     */
-     
-     /* The highest sea-level pressure on Earth occurs in Siberia, 
-      * where the Siberian High often attains a sea-level pressure above 
-      * 105 kPa with record highs close to 108.5 kPa.
-      */
-     
-    if(!(MS5611_ConfigTblPtr->p1 > 87.0f && MS5611_ConfigTblPtr->p1 < 108.5f))
+    if(!(MS5611_ConfigTblPtr->p1 > PRESSURE_KPA_MIN && MS5611_ConfigTblPtr->p1 < PRESSURE_KPA_MAX))
     {
         valid_bool = FALSE;
     }
@@ -125,7 +111,7 @@ int32 MS5611::ValidateConfigTbl(void* ConfigTblPtr)
     {
         (void) CFE_EVS_SendEvent(MS5611_CFGTBL_VALIDATION_ERR_EID, CFE_EVS_ERROR,
             "Config params table validation error");
-        iStatus = -1;
+        iStatus = MS5611_ERROR;
     }
 
 MS5611_ValidateConfigTbl_Exit_Tag:
@@ -145,9 +131,6 @@ int32 MS5611::AcquireConfigPointers(void)
     /*
     ** Release the table
     */
-    /* TODO: This return value can indicate success, error, or that the info has been 
-     * updated.  We ignore this return value in favor of checking CFE_TBL_Manage(), but
-     * be sure this is the behavior you want. */
     (void) CFE_TBL_ReleaseAddress(ConfigTblHdl);
 
     /*

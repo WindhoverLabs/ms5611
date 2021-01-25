@@ -59,11 +59,14 @@ extern "C" {
  ** Local Defines
  *************************************************************************/
 
+/** \brief Error code for MS5611 specific functions */
+#define MS5611_ERROR    (-1)
+
 /** \brief Minimum raw temperature measurement for error checking.
 **  
 **  \par Description:
 **       The minimum value of temperature for the MS5611 for temperature
-**       validation.
+**       validation. Equal to -40 degrees Celsius.
 **
 **  \par Limits:
 **       Must be defined as a minimum numeric value of the raw MS5611
@@ -75,7 +78,7 @@ extern "C" {
 **  
 **  \par Description:
 **       The maximum value of temperature for the MS5611 for temperature
-**       validation.
+**       validation. Equal to 85 degrees Celsius.
 **
 **  \par Limits:
 **       Must be defined as a maximum numeric value of the raw MS5611
@@ -121,17 +124,6 @@ typedef enum
     MS5611_INITIALIZED   = 1
 } MS5611_Status_t;
 
-
-/**
- * \brief application parameters
- */
-typedef struct
-{
-    /*! MSL Pressure */
-    double p1;
-} MS5611_Params_t;
-
-
 /**
  **  \brief MS5611 Application Class
  */
@@ -158,9 +150,6 @@ public:
     /** \brief Config Table Pointer */
     MS5611_ConfigTbl_t* ConfigTblPtr;
     
-    /** \brief params from the config table */
-    MS5611_Params_t m_Params;
-
     /** \brief Output Data published at the end of cycle */
     PX4_SensorBaroMsg_t SensorBaro;
     
@@ -172,6 +161,9 @@ public:
 
     /** \brief Diagnostic data for downlink */
     MS5611_DiagPacket_t Diag;
+    
+    /** \brief ADC value of the temperature conversion */
+    uint32 D2;
 
     /************************************************************************/
     /** \brief MS5611 (MS5611) application entry point
@@ -360,7 +352,7 @@ public:
      **  \endreturns
      **
      *************************************************************************/
-    boolean VerifyCmdLength(CFE_SB_Msg_t* MsgPtr, uint16 usExpectedLen);
+    osalbool VerifyCmdLength(CFE_SB_Msg_t* MsgPtr, uint16 usExpectedLen);
 
     /************************************************************************/
     /** \brief Get pressure and temperature from the MS5611.
@@ -372,23 +364,23 @@ public:
      **  \par Assumptions, External Events, and Notes:
      **       None
      **
-     **  \param [out]   Pressure    Pointer to store value.
+     **  \param [in/out]   Pressure    Pointer to store value.
      **
-     **  \param [out]   Temperature    Pointer to store value.
+     **  \param [in/out]   Temperature    Pointer to store value.
      **
      **  \returns
      **  TRUE if successful, FALSE for failure.
      **  \endreturns
      **
      *************************************************************************/
-    boolean GetMeasurement(int32 *Pressure, int32 *Temperature);
+    osalbool GetMeasurement(int32 *Pressure, int32 *Temperature);
 
     /************************************************************************/
     /** \brief Sends the SensorBaro message.
      **
      **  \par Description
-     **       This function publishes the SensorBaro message containing
-     **       <TODO>
+     **       This function reads the latest measurements from the MS5611 and 
+     **       publishes the SensorBaro message with the latest values to the SB
      **
      **  \par Assumptions, External Events, and Notes:
      **       None
@@ -430,15 +422,14 @@ public:
      **  \returns TRUE for success, FALSE for failure.
      **
      *************************************************************************/
-    boolean ValidateCRC(void);
+    osalbool ValidateCRC(void);
 
 private:
     /************************************************************************/
     /** \brief Initialize the configuration tables.
     **
     **  \par Description
-    **       This function initializes GPS's configuration tables.  This
-    **       includes <TODO>.
+    **       This function initializes MS5611's configuration table.
     **
     **  \par Assumptions, External Events, and Notes:
     **       None
@@ -447,7 +438,7 @@ private:
     **  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS  \endcode
     **  \retstmt Return codes from #CFE_TBL_Register          \endcode
     **  \retstmt Return codes from #CFE_TBL_Load              \endcode
-    **  \retstmt Return codes from #GPS_AcquireConfigPointers \endcode
+    **  \retstmt Return codes from #MS5611_AcquireConfigPointers \endcode
     **  \endreturns
     **
     *************************************************************************/
@@ -488,7 +479,7 @@ public:
     /** \brief Validate configuration table
     **
     **  \par Description
-    **       This function validates GPS's configuration table
+    **       This function validates MS5611's configuration table
     **
     **  \par Assumptions, External Events, and Notes:
     **       None
@@ -501,16 +492,6 @@ public:
     **
     *************************************************************************/
     static int32  ValidateConfigTbl(void*);
-    
-    /************************************************************************/
-    /** \brief Update parameters from the configuration table.
-     **
-     **  \par Description
-     **       This function updates the current parameters from the 
-     **       currently loaded configuration table.
-     **
-     *************************************************************************/
-    void UpdateParamsFromTable(void);
 };
 
 

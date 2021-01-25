@@ -39,13 +39,13 @@ void MS5611_Custom_InitData(void)
 }
 
 
-boolean MS5611_Custom_Init(void)
+osalbool MS5611_Custom_Init(void)
 {
     return TRUE;
 }
 
 
-boolean MS5611_Custom_Uninit(void)
+osalbool MS5611_Custom_Uninit(void)
 {
     return TRUE;
 }
@@ -57,7 +57,7 @@ void MS5611_Critical_Cleanup(void)
 }
 
 
-boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal)
+osalbool MS5611_ReadPROM(uint8 Addr, uint16 *returnVal)
 {
     /* Example values from MS5611 data sheet */
     switch(Addr)
@@ -107,19 +107,19 @@ boolean MS5611_ReadPROM(uint8 Addr, uint16 *returnVal)
 }
 
 
-boolean MS5611_D1Conversion(void)
+osalbool MS5611_D1Conversion(void)
 {
     return TRUE;
 }
 
 
-boolean MS5611_D2Conversion(void)
+osalbool MS5611_D2Conversion(void)
 {
     return TRUE;
 }
 
 
-boolean MS5611_ReadADCResult(uint32 *returnVal)
+osalbool MS5611_ReadADCResult(uint32 *returnVal)
 {
     return TRUE;
 }

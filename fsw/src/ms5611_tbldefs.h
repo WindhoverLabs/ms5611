@@ -51,6 +51,14 @@ extern "C" {
 /************************************************************************
 ** Local Defines
 *************************************************************************/
+/* The lowest non-tornadic atmospheric pressure ever measured was 87 kPa, 
+ * set on 12 October 1979, during Typhoon Tip in the western Pacific Ocean. */
+#define PRESSURE_KPA_MIN    (87.0f)
+     
+/* The highest sea-level pressure on Earth occurs in Siberia, 
+ * where the Siberian High often attains a sea-level pressure above 
+ * 105 kPa with record highs close to 108.5 kPa. */
+#define PRESSURE_KPA_MAX    (108.5f)
 
 /**
  * \brief Defines the table identification name used for the
