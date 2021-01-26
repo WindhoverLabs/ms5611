@@ -30,7 +30,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 #############################################################################
-add_airliner_app_def(ms5611
+buildliner_add_app_def(ms5611
     FILE MS5611
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/ms5611_app.cpp
@@ -53,7 +53,7 @@ add_airliner_app_def(ms5611
         ${PROJECT_SOURCE_DIR}/apps/ms5611/fsw/platform_inc
 )
 
-add_airliner_app_unit_test(ms5611-ut
+buildliner_add_app_unit_test(ms5611-ut
     UTASSERT
     NO_HELGRIND
     NO_MASSIF
